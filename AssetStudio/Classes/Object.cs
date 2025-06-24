@@ -16,7 +16,7 @@ public class Object
     [JsonIgnore]
     public UnityVersion version;
     [JsonIgnore]
-    public BuildTarget platform;
+    public BuildTarget m_Platform;
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public ClassIDType type;
     [JsonIgnore]
@@ -51,12 +51,12 @@ public class Object
         type = reader.type;
         m_PathID = reader.m_PathID;
         version = reader.version;
-        platform = reader.platform;
+        m_Platform = reader.platform;
         serializedType = reader.serializedType;
         classID = reader.classID;
         byteSize = reader.byteSize;
 
-        if (platform == BuildTarget.NoTarget)
+        if (m_Platform == BuildTarget.NoTarget)
         {
             var m_ObjectHideFlags = reader.ReadUInt32();
         }

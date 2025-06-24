@@ -2,8 +2,9 @@
 // https://github.com/Live2D/CubismSpecs/blob/master/FileFormats/motion3.json.md
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
+
 using AssetStudio;
 
 namespace CubismLive2DExtractor
@@ -45,7 +46,8 @@ namespace CubismLive2DExtractor
             public string Value;
         }
 
-        private static void AddSegments(
+        private static void AddSegments
+        (
             Keyframe<float> curve,
             Keyframe<float> preCurve,
             Keyframe<float> nextCurve,
@@ -56,43 +58,43 @@ namespace CubismLive2DExtractor
             ref int j
         )
         {
-            if (Math.Abs(curve.time - preCurve.time - 0.01f) < 0.0001f) // InverseSteppedSegment
+            if (Math.Abs(curve.m_Time - preCurve.m_Time - 0.01f) < 0.0001f) // InverseSteppedSegment
             {
-                if (nextCurve.value == curve.value)
+                if (nextCurve.m_Value == curve.m_Value)
                 {
                     cubismCurve.Segments.Add(3f); // Segment ID
-                    cubismCurve.Segments.Add(nextCurve.time);
-                    cubismCurve.Segments.Add(nextCurve.value);
+                    cubismCurve.Segments.Add(nextCurve.m_Time);
+                    cubismCurve.Segments.Add(nextCurve.m_Value);
                     j += 1;
                     totalPointCount += 1;
                     totalSegmentCount++;
                     return;
                 }
             }
-            if (float.IsPositiveInfinity(curve.inSlope)) // SteppedSegment
+            if (float.IsPositiveInfinity(curve.m_InSlope)) // SteppedSegment
             {
                 cubismCurve.Segments.Add(2f); // Segment ID
-                cubismCurve.Segments.Add(curve.time);
-                cubismCurve.Segments.Add(curve.value);
+                cubismCurve.Segments.Add(curve.m_Time);
+                cubismCurve.Segments.Add(curve.m_Value);
                 totalPointCount += 1;
             }
-            else if (preCurve.outSlope == 0f && Math.Abs(curve.inSlope) < 0.0001f && !forceBezier) // LinearSegment
+            else if (preCurve.m_OutSlope == 0f && Math.Abs(curve.m_InSlope) < 0.0001f && !forceBezier) // LinearSegment
             {
                 cubismCurve.Segments.Add(0f); // Segment ID
-                cubismCurve.Segments.Add(curve.time);
-                cubismCurve.Segments.Add(curve.value);
+                cubismCurve.Segments.Add(curve.m_Time);
+                cubismCurve.Segments.Add(curve.m_Value);
                 totalPointCount += 1;
             }
             else // BezierSegment
             {
-                var tangentLength = (curve.time - preCurve.time) / 3f;
+                var tangentLength = (curve.m_Time - preCurve.m_Time) / 3f;
                 cubismCurve.Segments.Add(1f); // Segment ID
-                cubismCurve.Segments.Add(preCurve.time + tangentLength);
-                cubismCurve.Segments.Add(preCurve.outSlope * tangentLength + preCurve.value);
-                cubismCurve.Segments.Add(curve.time - tangentLength);
-                cubismCurve.Segments.Add(curve.value - curve.inSlope * tangentLength);
-                cubismCurve.Segments.Add(curve.time);
-                cubismCurve.Segments.Add(curve.value);
+                cubismCurve.Segments.Add(preCurve.m_Time + tangentLength);
+                cubismCurve.Segments.Add(preCurve.m_OutSlope * tangentLength + preCurve.m_Value);
+                cubismCurve.Segments.Add(curve.m_Time - tangentLength);
+                cubismCurve.Segments.Add(curve.m_Value - curve.m_InSlope * tangentLength);
+                cubismCurve.Segments.Add(curve.m_Time);
+                cubismCurve.Segments.Add(curve.m_Value);
                 totalPointCount += 3;
             }
             totalSegmentCount++;
@@ -170,8 +172,8 @@ namespace CubismLive2DExtractor
                     Segments = new List<float>
                     {
                         // First point
-                        fadeMotion.ParameterCurves[i].m_Curve[0].time,
-                        fadeMotion.ParameterCurves[i].m_Curve[0].value
+                        fadeMotion.ParameterCurves[i].m_Curve[0].m_Time,
+                        fadeMotion.ParameterCurves[i].m_Curve[0].m_Value
                     }
                 };
                 for (var j = 1; j < fadeMotion.ParameterCurves[i].m_Curve.Length; j++)
@@ -257,18 +259,16 @@ namespace CubismLive2DExtractor
             Meta.TotalUserDataSize = totalUserDataSize;
         }
 
-        private static Keyframe<float> CreateKeyFrame(ImportedKeyframe<float> iKeyframe)
-        {
-            return new Keyframe<float>
+        private static Keyframe<float> CreateKeyFrame(ImportedKeyframe<float> iKeyframe) 
+            => new()
             {
-                time = iKeyframe.time,
-                value = iKeyframe.value,
-                inSlope = iKeyframe.inSlope,
-                outSlope = iKeyframe.outSlope,
-                weightedMode = 0,
-                inWeight = 0,
-                outWeight = 0,
+                m_Time = iKeyframe.time,
+                m_Value = iKeyframe.value,
+                m_InSlope = iKeyframe.inSlope,
+                m_OutSlope = iKeyframe.outSlope,
+                m_WeightedMode = 0,
+                m_InWeight = 0,
+                m_OutWeight = 0,
             };
-        }
     }
 }

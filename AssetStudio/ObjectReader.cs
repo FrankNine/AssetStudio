@@ -37,7 +37,5 @@ public class ObjectReader : EndianBinaryReader
     }
 
     public void Reset()
-    {
-        Position = byteStart;
-    }
+        => Position = byteStart;
 }

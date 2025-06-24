@@ -2,13 +2,13 @@
 
 public class StaticBatchInfo
 {
-    public ushort firstSubMesh;
-    public ushort subMeshCount;
+    public ushort m_firstSubMesh;
+    public ushort m_subMeshCount;
 
     public StaticBatchInfo(ObjectReader reader)
     {
-        firstSubMesh = reader.ReadUInt16();
-        subMeshCount = reader.ReadUInt16();
+        m_firstSubMesh = reader.ReadUInt16();
+        m_subMeshCount = reader.ReadUInt16();
     }
 }
 

@@ -6,37 +6,37 @@ using System.Text.Json.Serialization;
 
 public class SpriteAtlasData
 {
-    public PPtr<Texture2D> texture;
-    public PPtr<Texture2D> alphaTexture;
-    public Rectf textureRect;
-    public Vector2 textureRectOffset;
-    public Vector2 atlasRectOffset;
-    public Vector4 uvTransform;
-    public float downscaleMultiplier;
-    public SpriteSettings settingsRaw;
-    public SecondarySpriteTexture[] secondaryTextures;
+    public PPtr<Texture2D> m_Texture;
+    public PPtr<Texture2D> m_AlphaTexture;
+    public Rectf m_TextureRect;
+    public Vector2 m_TextureRectOffset;
+    public Vector2 m_AtlasRectOffset;
+    public Vector4 m_UvTransform;
+    public float m_DownscaleMultiplier;
+    public SpriteSettings m_SettingsRaw;
+    public SecondarySpriteTexture[] m_SecondaryTextures;
 
     public SpriteAtlasData(ObjectReader reader)
     {
         var version = reader.version;
-        texture = new PPtr<Texture2D>(reader);
-        alphaTexture = new PPtr<Texture2D>(reader);
-        textureRect = new Rectf(reader);
-        textureRectOffset = reader.ReadVector2();
+        m_Texture = new PPtr<Texture2D>(reader);
+        m_AlphaTexture = new PPtr<Texture2D>(reader);
+        m_TextureRect = new Rectf(reader);
+        m_TextureRectOffset = reader.ReadVector2();
         if (version >= (2017, 2)) //2017.2 and up
         {
-            atlasRectOffset = reader.ReadVector2();
+            m_AtlasRectOffset = reader.ReadVector2();
         }
-        uvTransform = reader.ReadVector4();
-        downscaleMultiplier = reader.ReadSingle();
-        settingsRaw = new SpriteSettings(reader);
+        m_UvTransform = reader.ReadVector4();
+        m_DownscaleMultiplier = reader.ReadSingle();
+        m_SettingsRaw = new SpriteSettings(reader);
         if (version >= (2020, 2)) //2020.2 and up
         {
             var secondaryTexturesSize = reader.ReadInt32();
-            secondaryTextures = new SecondarySpriteTexture[secondaryTexturesSize];
+            m_SecondaryTextures = new SecondarySpriteTexture[secondaryTexturesSize];
             for (int i = 0; i < secondaryTexturesSize; i++)
             {
-                secondaryTextures[i] = new SecondarySpriteTexture(reader);
+                m_SecondaryTextures[i] = new SecondarySpriteTexture(reader);
             }
             reader.AlignStream();
         }

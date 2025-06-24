@@ -148,7 +148,7 @@ internal static class Exporter
         for (var i = 0; i < m_Mesh.m_SubMeshes.Length; i++)
         {
             sb.AppendLine($"g {m_Mesh.m_Name}_{i}");
-            int indexCount = (int)m_Mesh.m_SubMeshes[i].indexCount;
+            int indexCount = (int)m_Mesh.m_SubMeshes[i].m_IndexCount;
             var end = sum + indexCount / 3;
             for (int f = sum; f < end; f++)
             {
@@ -192,7 +192,7 @@ internal static class Exporter
         switch (item.Asset)
         {
             case Texture2D m_Texture2D:
-                if (!string.IsNullOrEmpty(m_Texture2D.m_StreamData?.path))
+                if (!string.IsNullOrEmpty(m_Texture2D.m_StreamData?.m_Path))
                 {
                     m_Texture2D.image_data.WriteData(exportFullPath.Replace(".dat", "_data.dat"));
                 }

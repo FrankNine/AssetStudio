@@ -219,8 +219,8 @@ internal static class Studio
 
                         foreach (var m_Container in m_AssetBundle.m_Container)
                         {
-                            var preloadIndex = m_Container.Value.preloadIndex;
-                            var preloadSize = isStreamedSceneAssetBundle ? preloadTable.Length : m_Container.Value.preloadSize;
+                            var preloadIndex = m_Container.Value.m_PreloadIndex;
+                            var preloadSize = isStreamedSceneAssetBundle ? preloadTable.Length : m_Container.Value.m_PreloadSize;
                             var preloadEnd = preloadIndex + preloadSize;
                             for (var k = preloadIndex; k < preloadEnd; k++)
                             {
@@ -242,13 +242,13 @@ internal static class Studio
                         }
                         break;
                     case Texture2D m_Texture2D:
-                        if (!string.IsNullOrEmpty(m_Texture2D.m_StreamData?.path))
-                            assetItem.FullSize = asset.byteSize + m_Texture2D.m_StreamData.size;
+                        if (!string.IsNullOrEmpty(m_Texture2D.m_StreamData?.m_Path))
+                            assetItem.FullSize = asset.byteSize + m_Texture2D.m_StreamData.m_Size;
                         assetItem.Text = m_Texture2D.m_Name;
                         break;
                     case Texture2DArray m_Texture2DArray:
-                        if (!string.IsNullOrEmpty(m_Texture2DArray.m_StreamData?.path))
-                            assetItem.FullSize = asset.byteSize + m_Texture2DArray.m_StreamData.size;
+                        if (!string.IsNullOrEmpty(m_Texture2DArray.m_StreamData?.m_Path))
+                            assetItem.FullSize = asset.byteSize + m_Texture2DArray.m_StreamData.m_Size;
                         assetItem.Text = m_Texture2DArray.m_Name;
                         tex2dArrayAssetList.Add(assetItem);
                         break;

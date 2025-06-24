@@ -2,9 +2,9 @@
 
 public class StreamingInfo
 {
-    public long offset; //ulong
-    public uint size;
-    public string path;
+    public long m_Offset; //ulong
+    public uint m_Size;
+    public string m_Path;
 
     public StreamingInfo() { }
 
@@ -14,13 +14,13 @@ public class StreamingInfo
 
         if (version >= 2020) //2020.1 and up
         {
-            offset = reader.ReadInt64();
+            m_Offset = reader.ReadInt64();
         }
         else
         {
-            offset = reader.ReadUInt32();
+            m_Offset = reader.ReadUInt32();
         }
-        size = reader.ReadUInt32();
-        path = reader.ReadAlignedString();
+        m_Size = reader.ReadUInt32();
+        m_Path = reader.ReadAlignedString();
     }
 }

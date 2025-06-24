@@ -8,7 +8,7 @@ using Mono.Cecil;
 public class AssemblyLoader
 {
     public bool Loaded;
-    private Dictionary<string, ModuleDefinition> moduleDic = new Dictionary<string, ModuleDefinition>();
+    private Dictionary<string, ModuleDefinition> moduleDic = new();
 
     public void Load(string path)
     {

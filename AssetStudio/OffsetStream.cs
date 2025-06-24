@@ -43,9 +43,7 @@ public class OffsetStream : Stream
     public override void Flush() { }
 
     public override int Read(byte[] buffer, int offset, int count)
-    {
-        return _baseStream.Read(buffer, offset, count);
-    }
+        => _baseStream.Read(buffer, offset, count);
 
     public override long Seek(long offset, SeekOrigin origin)
     {
@@ -70,14 +68,10 @@ public class OffsetStream : Stream
     }
 
     public override void SetLength(long value)
-    {
-        throw new System.NotImplementedException();
-    }
+        => throw new System.NotImplementedException();
 
     public override void Write(byte[] buffer, int offset, int count)
-    {
-        throw new System.NotImplementedException();
-    }
+        => throw new System.NotImplementedException();
 
     protected override void Dispose(bool disposing)
     {

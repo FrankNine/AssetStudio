@@ -33,19 +33,19 @@ namespace CubismLive2DExtractor
                 iAnim.Name = animationClip.m_Name;
                 iAnim.SampleRate = animationClip.m_SampleRate;
                 iAnim.Duration = animationClip.m_MuscleClip.m_StopTime;
-                var m_Clip = animationClip.m_MuscleClip.m_Clip.data;
+                var m_Clip = animationClip.m_MuscleClip.m_Clip.m_Data;
                 var streamedFrames = m_Clip.m_StreamedClip.ReadData();
                 var m_ClipBindingConstant = animationClip.m_ClipBindingConstant;
                 for (int frameIndex = 1; frameIndex < streamedFrames.Count - 1; frameIndex++)
                 {
                     var frame = streamedFrames[frameIndex];
-                    for (int curveIndex = 0; curveIndex < frame.keyList.Length; curveIndex++)
+                    for (int curveIndex = 0; curveIndex < frame.m_KeyList.Length; curveIndex++)
                     {
-                        ReadStreamedData(iAnim, m_ClipBindingConstant, frame.time, frame.keyList[curveIndex]);
+                        ReadStreamedData(iAnim, m_ClipBindingConstant, frame.m_Time, frame.m_KeyList[curveIndex]);
                     }
                 }
                 var m_DenseClip = m_Clip.m_DenseClip;
-                var streamCount = m_Clip.m_StreamedClip.curveCount;
+                var streamCount = m_Clip.m_StreamedClip.m_CurveCount;
                 for (int frameIndex = 0; frameIndex < m_DenseClip.m_FrameCount; frameIndex++)
                 {
                     var time = m_DenseClip.m_BeginTime + frameIndex / m_DenseClip.m_SampleRate;
@@ -61,10 +61,10 @@ namespace CubismLive2DExtractor
                 var time2 = 0.0f;
                 for (int i = 0; i < 2; i++)
                 {
-                    for (int curveIndex = 0; curveIndex < m_ConstantClip.data.Length; curveIndex++)
+                    for (int curveIndex = 0; curveIndex < m_ConstantClip.m_Data.Length; curveIndex++)
                     {
                         var index = streamCount + denseCount + curveIndex;
-                        ReadCurveData(iAnim, m_ClipBindingConstant, (int)index, time2, m_ConstantClip.data, 0, curveIndex);
+                        ReadCurveData(iAnim, m_ClipBindingConstant, (int)index, time2, m_ConstantClip.m_Data, 0, curveIndex);
                     }
                     time2 = animationClip.m_MuscleClip.m_StopTime;
                 }
@@ -72,8 +72,8 @@ namespace CubismLive2DExtractor
                 {
                     iAnim.Events.Add(new ImportedEvent
                     {
-                        time = m_Event.time,
-                        value = m_Event.data
+                        time = m_Event.m_Time,
+                        value = m_Event.m_Data
                     });
                 }
 
@@ -84,19 +84,25 @@ namespace CubismLive2DExtractor
             }
         }
 
-        private void ReadStreamedData(ImportedKeyframedAnimation iAnim, AnimationClipBindingConstant m_ClipBindingConstant, float time, StreamedClip.StreamedCurveKey curveKey)
+        private void ReadStreamedData
+        (
+            ImportedKeyframedAnimation iAnim,
+            AnimationClipBindingConstant m_ClipBindingConstant,
+            float time,
+            StreamedClip.StreamedCurveKey curveKey
+        )
         {
-            var binding = m_ClipBindingConstant.FindBinding(curveKey.index);
+            var binding = m_ClipBindingConstant.FindBinding(curveKey.m_Index);
             GetLive2dPath(binding, out var target, out var boneName);
             if (string.IsNullOrEmpty(boneName))
             {
-                Logger.Warning($"[Motion Converter] \"{iAnim.Name}\" read fail on binding {Array.IndexOf(m_ClipBindingConstant.genericBindings, binding)}");
+                Logger.Warning($"[Motion Converter] \"{iAnim.Name}\" read fail on binding {Array.IndexOf(m_ClipBindingConstant.m_GenericBindings, binding)}");
                 return;
             }
 
             var track = iAnim.FindTrack(boneName);
             track.Target = target;
-            track.Curve.Add(new ImportedKeyframe<float>(time, curveKey.value, curveKey.inSlope, curveKey.outSlope, curveKey.coeff));
+            track.Curve.Add(new ImportedKeyframe<float>(time, curveKey.m_Value, curveKey.m_InSlope, curveKey.m_OutSlope, curveKey.m_Coeff));
         }
 
         private void ReadCurveData(ImportedKeyframedAnimation iAnim, AnimationClipBindingConstant m_ClipBindingConstant, int index, float time, float[] data, int offset, int curveIndex)
@@ -105,7 +111,7 @@ namespace CubismLive2DExtractor
             GetLive2dPath(binding, out var target, out var boneName);
             if (string.IsNullOrEmpty(boneName))
             {
-                Logger.Warning($"[Motion Converter] \"{iAnim.Name}\" read fail on binding {Array.IndexOf(m_ClipBindingConstant.genericBindings, binding)}");
+                Logger.Warning($"[Motion Converter] \"{iAnim.Name}\" read fail on binding {Array.IndexOf(m_ClipBindingConstant.m_GenericBindings, binding)}");
                 return;
             }
 
@@ -117,7 +123,7 @@ namespace CubismLive2DExtractor
 
         private void GetLive2dPath(GenericBinding binding, out string target, out string id)
         {
-            var path = binding.path;
+            var path = binding.m_Path;
             id = null;
             target = null;
             if (path != 0 && bonePathHash.TryGetValue(path, out var boneName))
@@ -134,7 +140,7 @@ namespace CubismLive2DExtractor
                     target = "PartOpacity";
                 }
             }
-            else if (binding.script.TryGet(out MonoScript script))
+            else if (binding.m_Script.TryGet(out MonoScript script))
             {
                 switch (script.m_ClassName)
                 {

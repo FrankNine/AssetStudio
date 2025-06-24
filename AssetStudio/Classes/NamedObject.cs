@@ -6,8 +6,6 @@ public class NamedObject : EditorExtension
 
     protected NamedObject() { }
 
-    protected NamedObject(ObjectReader reader) : base(reader)
-    {
-        m_Name = reader.ReadAlignedString();
-    }
+    protected NamedObject(ObjectReader reader) : base(reader) 
+        => m_Name = reader.ReadAlignedString();
 }

@@ -67,8 +67,8 @@ public sealed class Texture2DArray : Texture
             m_StreamData = new StreamingInfo(reader);
         }
 
-        image_data = !string.IsNullOrEmpty(m_StreamData?.path)
-            ? new ResourceReader(m_StreamData.path, assetsFile, m_StreamData.offset, (int)m_StreamData.size)
+        image_data = !string.IsNullOrEmpty(m_StreamData?.m_Path)
+            ? new ResourceReader(m_StreamData.m_Path, assetsFile, m_StreamData.m_Offset, (int)m_StreamData.m_Size)
             : new ResourceReader(reader, reader.BaseStream.Position, image_data_size);
 
         TextureList = new List<Texture2D>();
@@ -86,8 +86,8 @@ public sealed class Texture2DArray : Texture
         m_TextureSettings = parsedTex2dArray.m_TextureSettings;
         m_StreamData = parsedTex2dArray.m_StreamData;
             
-        image_data = !string.IsNullOrEmpty(m_StreamData?.path)
-            ? new ResourceReader(m_StreamData.path, assetsFile, m_StreamData.offset, m_StreamData.size)
+        image_data = !string.IsNullOrEmpty(m_StreamData?.m_Path)
+            ? new ResourceReader(m_StreamData.m_Path, assetsFile, m_StreamData.m_Offset, m_StreamData.m_Size)
             : new ResourceReader(reader, parsedTex2dArray.image_data.Offset, parsedTex2dArray.image_data.Size);
 
         TextureList = new List<Texture2D>();

@@ -27,7 +27,7 @@ public sealed class Texture2D : Texture
         reader = m_Texture2DArray.reader;
         assetsFile = m_Texture2DArray.assetsFile;
         version = m_Texture2DArray.version;
-        platform = m_Texture2DArray.platform;
+        m_Platform = m_Texture2DArray.m_Platform;
 
         m_Name = $"{m_Texture2DArray.m_Name}_{layer + 1}";
         type = ClassIDType.Texture2DArrayImage;
@@ -48,8 +48,8 @@ public sealed class Texture2D : Texture
         m_CompleteImageSize = (uint)(m_Texture2DArray.m_DataSize / m_Texture2DArray.m_Depth);
         var offset = layer * m_CompleteImageSize + m_Texture2DArray.image_data.Offset;
             
-        image_data = !string.IsNullOrEmpty(m_StreamData?.path) 
-            ? new ResourceReader(m_StreamData.path, assetsFile, offset, m_CompleteImageSize) 
+        image_data = !string.IsNullOrEmpty(m_StreamData?.m_Path) 
+            ? new ResourceReader(m_StreamData.m_Path, assetsFile, offset, m_CompleteImageSize) 
             : new ResourceReader(reader, offset, m_CompleteImageSize);
 
         byteSize = (uint)(m_Width * m_Height) * 4;
@@ -69,8 +69,8 @@ public sealed class Texture2D : Texture
         m_StreamData = parsedTex2d.m_StreamData;
         m_PlatformBlob = parsedTex2d.m_PlatformBlob ?? Array.Empty<byte>();
 
-        image_data = !string.IsNullOrEmpty(m_StreamData?.path)
-            ? new ResourceReader(m_StreamData.path, assetsFile, m_StreamData.offset, m_StreamData.size)
+        image_data = !string.IsNullOrEmpty(m_StreamData?.m_Path)
+            ? new ResourceReader(m_StreamData.m_Path, assetsFile, m_StreamData.m_Offset, m_StreamData.m_Size)
             : new ResourceReader(reader, parsedTex2d.image_data.Offset, parsedTex2d.image_data.Size);
     }
 
@@ -91,9 +91,9 @@ public sealed class Texture2D : Texture
             var m_UploadedMode = reader.ReadInt32();
             m_DataStreamData = new StreamingInfo //sample is needed
             {
-                offset = 0,
-                size = reader.ReadUInt32(),
-                path = reader.ReadAlignedString()
+                m_Offset = 0,
+                m_Size = reader.ReadUInt32(),
+                m_Path = reader.ReadAlignedString()
             };
         }
         m_TextureFormat = (TextureFormat)reader.ReadInt32();
@@ -168,8 +168,8 @@ public sealed class Texture2D : Texture
             m_StreamData = new StreamingInfo(reader);
         }
 
-        image_data = !string.IsNullOrEmpty(m_StreamData?.path)
-            ? new ResourceReader(m_StreamData.path, assetsFile, m_StreamData.offset, m_StreamData.size)
+        image_data = !string.IsNullOrEmpty(m_StreamData?.m_Path)
+            ? new ResourceReader(m_StreamData.m_Path, assetsFile, m_StreamData.m_Offset, m_StreamData.m_Size)
             : new ResourceReader(reader, reader.BaseStream.Position, image_data_size);
     }
 

@@ -9,8 +9,6 @@ public class UnityTexEnv
     public Vector2 m_Scale;
     public Vector2 m_Offset;
 
-    public UnityTexEnv() { }
-
     public UnityTexEnv(ObjectReader reader)
     {
         m_Texture = new PPtr<Texture>(reader);
@@ -25,8 +23,6 @@ public class UnityPropertySheet
     public KeyValuePair<string, int>[] m_Ints;
     public KeyValuePair<string, float>[] m_Floats;
     public KeyValuePair<string, Color>[] m_Colors;
-
-    public UnityPropertySheet() { }
 
     public UnityPropertySheet(ObjectReader reader)
     {
@@ -120,14 +116,14 @@ public sealed class Material : NamedObject
             var stringTagMapSize = reader.ReadInt32();
             for (int i = 0; i < stringTagMapSize; i++)
             {
-                var first = reader.ReadAlignedString();
-                var second = reader.ReadAlignedString();
+                var m_First = reader.ReadAlignedString();
+                var m_Second = reader.ReadAlignedString();
             }
         }
 
         if (version >= (5, 6)) //5.6 and up
         {
-            var disabledShaderPasses = reader.ReadStringArray();
+            var m_DisabledShaderPasses = reader.ReadStringArray();
         }
 
         m_SavedProperties = new UnityPropertySheet(reader);

@@ -7,7 +7,5 @@ public abstract class Component : EditorExtension
     public Component() { }
 
     protected Component(ObjectReader reader) : base(reader)
-    {
-        m_GameObject = new PPtr<GameObject>(reader);
-    }
+        => m_GameObject = new PPtr<GameObject>(reader);
 }
