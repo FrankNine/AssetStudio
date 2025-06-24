@@ -1,14 +1,13 @@
-﻿namespace AssetStudio
+﻿namespace AssetStudio;
+
+public abstract class Component : EditorExtension
 {
-    public abstract class Component : EditorExtension
+    public PPtr<GameObject> m_GameObject;
+
+    public Component() { }
+
+    protected Component(ObjectReader reader) : base(reader)
     {
-        public PPtr<GameObject> m_GameObject;
-
-        public Component() { }
-
-        protected Component(ObjectReader reader) : base(reader)
-        {
-            m_GameObject = new PPtr<GameObject>(reader);
-        }
+        m_GameObject = new PPtr<GameObject>(reader);
     }
 }

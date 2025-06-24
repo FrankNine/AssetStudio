@@ -1,21 +1,11 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-#if NETFRAMEWORK
-using AssetStudio.PInvoke;
-#endif
 
 namespace BundleCompression.Oodle
 {
     public static class OodleLZ
     {
         private const string LibName = "ooz";
-
-#if NETFRAMEWORK
-        static OodleLZ()
-        {
-            DllLoader.PreloadDll(LibName);
-        }
-#endif
 
         [DllImport(LibName)]
         private static extern int Ooz_Decompress(

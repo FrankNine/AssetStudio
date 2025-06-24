@@ -2,92 +2,91 @@
 // Original code was developed by Dot Net Perls
 // For more detail visit: https://www.dotnetperls.com/alphanumeric-sorting
 
+namespace AssetStudioGUI;
+
 using System;
 using System.Collections.Generic;
 
-namespace AssetStudioGUI
+internal class AlphanumComparatorFast : IComparer<string>
 {
-    internal class AlphanumComparatorFast : IComparer<string>
+    public int Compare(string s1, string s2)
     {
-        public int Compare(string s1, string s2)
+        int len1 = s1.Length;
+        int len2 = s2.Length;
+        int marker1 = 0;
+        int marker2 = 0;
+
+        // Walk through two the strings with two markers.
+        while (marker1 < len1 && marker2 < len2)
         {
-            int len1 = s1.Length;
-            int len2 = s2.Length;
-            int marker1 = 0;
-            int marker2 = 0;
+            char ch1 = s1[marker1];
+            char ch2 = s2[marker2];
 
-            // Walk through two the strings with two markers.
-            while (marker1 < len1 && marker2 < len2)
+            // Some buffers we can build up characters in for each chunk.
+            char[] space1 = new char[len1];
+            int loc1 = 0;
+            char[] space2 = new char[len2];
+            int loc2 = 0;
+
+            // Walk through all following characters that are digits or
+            // characters in BOTH strings starting at the appropriate marker.
+            // Collect char arrays.
+            do
             {
-                char ch1 = s1[marker1];
-                char ch2 = s2[marker2];
+                space1[loc1++] = ch1;
+                marker1++;
 
-                // Some buffers we can build up characters in for each chunk.
-                char[] space1 = new char[len1];
-                int loc1 = 0;
-                char[] space2 = new char[len2];
-                int loc2 = 0;
-
-                // Walk through all following characters that are digits or
-                // characters in BOTH strings starting at the appropriate marker.
-                // Collect char arrays.
-                do
+                if (marker1 < len1)
                 {
-                    space1[loc1++] = ch1;
-                    marker1++;
-
-                    if (marker1 < len1)
-                    {
-                        ch1 = s1[marker1];
-                    }
-                    else
-                    {
-                        break;
-                    }
-                } while (char.IsDigit(ch1) == char.IsDigit(space1[0]));
-
-                do
-                {
-                    space2[loc2++] = ch2;
-                    marker2++;
-
-                    if (marker2 < len2)
-                    {
-                        ch2 = s2[marker2];
-                    }
-                    else
-                    {
-                        break;
-                    }
-                } while (char.IsDigit(ch2) == char.IsDigit(space2[0]));
-
-                // If we have collected numbers, compare them numerically.
-                // Otherwise, if we have strings, compare them alphabetically.
-                int result;
-
-                if (char.IsDigit(space1[0]) && char.IsDigit(space2[0]))
-                {
-                    if (long.TryParse(new string(space1), out long thisNumericChunk) &&
-                        long.TryParse(new string(space2), out long thatNumericChunk))
-                    {
-                        result = thisNumericChunk.CompareTo(thatNumericChunk);
-                    }
-                    else
-                    {
-                        result = MemoryExtensions.CompareTo(space1, space2, StringComparison.Ordinal);
-                    }
+                    ch1 = s1[marker1];
                 }
                 else
                 {
-                    result = MemoryExtensions.CompareTo(space1, space2, StringComparison.InvariantCultureIgnoreCase);
+                    break;
                 }
+            } while (char.IsDigit(ch1) == char.IsDigit(space1[0]));
 
-                if (result != 0)
+            do
+            {
+                space2[loc2++] = ch2;
+                marker2++;
+
+                if (marker2 < len2)
                 {
-                    return result;
+                    ch2 = s2[marker2];
+                }
+                else
+                {
+                    break;
+                }
+            } while (char.IsDigit(ch2) == char.IsDigit(space2[0]));
+
+            // If we have collected numbers, compare them numerically.
+            // Otherwise, if we have strings, compare them alphabetically.
+            int result;
+
+            if (char.IsDigit(space1[0]) && char.IsDigit(space2[0]))
+            {
+                if (long.TryParse(new string(space1), out long thisNumericChunk) &&
+                    long.TryParse(new string(space2), out long thatNumericChunk))
+                {
+                    result = thisNumericChunk.CompareTo(thatNumericChunk);
+                }
+                else
+                {
+                    result = MemoryExtensions.CompareTo(space1, space2, StringComparison.Ordinal);
                 }
             }
-            return len1 - len2;
+            else
+            {
+                result = MemoryExtensions.CompareTo(space1, space2, StringComparison.InvariantCultureIgnoreCase);
+            }
+
+            if (result != 0)
+            {
+                return result;
+            }
         }
+        return len1 - len2;
     }
 }

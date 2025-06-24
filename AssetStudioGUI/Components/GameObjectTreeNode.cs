@@ -1,16 +1,16 @@
-﻿using System.Windows.Forms;
+﻿namespace AssetStudioGUI;
+
+using System.Windows.Forms;
+
 using AssetStudio;
 
-namespace AssetStudioGUI
+internal class GameObjectTreeNode : TreeNode
 {
-    internal class GameObjectTreeNode : TreeNode
-    {
-        public GameObject gameObject;
+    public GameObject gameObject;
 
-        public GameObjectTreeNode(GameObject gameObject)
-        {
-            this.gameObject = gameObject;
-            Text = gameObject.m_Name;
-        }
+    public GameObjectTreeNode(GameObject gameObject)
+    {
+        this.gameObject = gameObject;
+        Text = gameObject.m_Name;
     }
 }

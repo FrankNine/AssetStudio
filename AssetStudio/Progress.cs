@@ -1,31 +1,30 @@
-﻿using System;
+﻿namespace AssetStudio;
 
-namespace AssetStudio
+using System;
+
+public static class Progress
 {
-    public static class Progress
+    public static IProgress<int> Default = new Progress<int>();
+    private static int preValue;
+
+    public static void Reset()
     {
-        public static IProgress<int> Default = new Progress<int>();
-        private static int preValue;
+        preValue = 0;
+        Default.Report(0);
+    }
 
-        public static void Reset()
-        {
-            preValue = 0;
-            Default.Report(0);
-        }
+    public static void Report(int current, int total)
+    {
+        var value = (int)(current * 100f / total);
+        Report(value);
+    }
 
-        public static void Report(int current, int total)
+    private static void Report(int value)
+    {
+        if (value > preValue)
         {
-            var value = (int)(current * 100f / total);
-            Report(value);
-        }
-
-        private static void Report(int value)
-        {
-            if (value > preValue)
-            {
-                preValue = value;
-                Default.Report(value);
-            }
+            preValue = value;
+            Default.Report(value);
         }
     }
 }

@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿namespace AssetStudio;
 
-namespace AssetStudio
+using System;
+
+public class FileIdentifier
 {
-    public class FileIdentifier
-    {
-        public Guid guid;
-        public int type; //enum { kNonAssetType = 0, kDeprecatedCachedAssetType = 1, kSerializedAssetType = 2, kMetaAssetType = 3 };
-        public string pathName;
+    public Guid guid;
+    public int type; //enum { kNonAssetType = 0, kDeprecatedCachedAssetType = 1, kSerializedAssetType = 2, kMetaAssetType = 3 };
+    public string pathName;
 
-        //custom
-        public string fileName;
-    }
+    //custom
+    public string fileName;
 }

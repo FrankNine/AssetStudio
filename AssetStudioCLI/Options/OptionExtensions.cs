@@ -1,17 +1,16 @@
-﻿using System;
+﻿namespace AssetStudioCLI.Options;
 
-namespace AssetStudioCLI.Options
+using System;
+
+internal static class OptionExtensions
 {
-    internal static class OptionExtensions
-    {
-        public static Action<string, string, string, HelpGroups, bool> OptionGrouping = (name, desc, example, group, isFlag) => { };
-    }
+    public static Action<string, string, string, HelpGroups, bool> OptionGrouping = (name, desc, example, group, isFlag) => { };
+}
 
-    internal class GroupedOption<T> : Option<T>
+internal class GroupedOption<T> : Option<T>
+{
+    public GroupedOption(T optionDefaultValue, string optionName, string optionDescription, string optionExample, HelpGroups optionHelpGroup, bool isFlag = false) : base(optionDefaultValue, optionName, optionDescription, optionExample, optionHelpGroup, isFlag)
     {
-        public GroupedOption(T optionDefaultValue, string optionName, string optionDescription, string optionExample, HelpGroups optionHelpGroup, bool isFlag = false) : base(optionDefaultValue, optionName, optionDescription, optionExample, optionHelpGroup, isFlag)
-        {
-            OptionExtensions.OptionGrouping(optionName, optionDescription, optionExample, optionHelpGroup, isFlag);
-        }
+        OptionExtensions.OptionGrouping(optionName, optionDescription, optionExample, optionHelpGroup, isFlag);
     }
 }

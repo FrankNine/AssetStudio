@@ -1,4 +1,6 @@
-﻿using BundleCompression.Lzma;
+﻿namespace AssetStudio;
+
+using BundleCompression.Lzma;
 using BundleCompression.Oodle;
 using System;
 using System.IO;
@@ -6,60 +8,57 @@ using System.Text.RegularExpressions;
 using K4os.Compression.LZ4;
 using ZstdSharp;
 
-namespace AssetStudio
+public static class BundleDecompressionHelper
 {
-    public static class BundleDecompressionHelper
+    private static readonly Decompressor ZstdDecompressor = new Decompressor();
+    private static readonly string MsgPattern = @"\. ";
+
+    public static MemoryStream DecompressLzmaStream(MemoryStream inStream)
     {
-        private static readonly Decompressor ZstdDecompressor = new Decompressor();
-        private static readonly string MsgPattern = @"\. ";
+        return SevenZipLzma.DecompressStream(inStream);
+    }
 
-        public static MemoryStream DecompressLzmaStream(MemoryStream inStream)
+    public static long DecompressLzmaStream(Stream compressedStream, Stream decompressedStream, long compressedSize, long decompressedSize, ref string errorMsg)
+    {
+        var numWrite = -1L;
+        try
         {
-            return SevenZipLzma.DecompressStream(inStream);
+            numWrite = SevenZipLzma.DecompressStream(compressedStream, decompressedStream, compressedSize, decompressedSize);
         }
+        catch (Exception e)
+        {
+            Logger.Debug(e.ToString());
+            errorMsg = $"({Regex.Split(e.Message, MsgPattern, RegexOptions.CultureInvariant)[0]})";
+        }
+        return numWrite;
+    }
 
-        public static long DecompressLzmaStream(Stream compressedStream, Stream decompressedStream, long compressedSize, long decompressedSize, ref string errorMsg)
+    public static int DecompressBlock(CompressionType type, ReadOnlySpan<byte> srcBuffer, Span<byte> dstBuffer, ref string errorMsg)
+    {
+        var numWrite = -1;
+        try
         {
-            var numWrite = -1L;
-            try
+            switch (type)
             {
-                numWrite = SevenZipLzma.DecompressStream(compressedStream, decompressedStream, compressedSize, decompressedSize);
+                case CompressionType.Lz4:
+                case CompressionType.Lz4HC:
+                    numWrite = LZ4Codec.Decode(srcBuffer, dstBuffer);
+                    break;
+                case CompressionType.Zstd:
+                    numWrite = ZstdDecompressor.Unwrap(srcBuffer, dstBuffer);
+                    break;
+                case CompressionType.Oodle:
+                    numWrite = OodleLZ.Decompress(srcBuffer, dstBuffer);
+                    break;
+                default:
+                    throw new NotSupportedException();
             }
-            catch (Exception e)
-            {
-                Logger.Debug(e.ToString());
-                errorMsg = $"({Regex.Split(e.Message, MsgPattern, RegexOptions.CultureInvariant)[0]})";
-            }
-            return numWrite;
         }
-
-        public static int DecompressBlock(CompressionType type, ReadOnlySpan<byte> srcBuffer, Span<byte> dstBuffer, ref string errorMsg)
+        catch (Exception e)
         {
-            var numWrite = -1;
-            try
-            {
-                switch (type)
-                {
-                    case CompressionType.Lz4:
-                    case CompressionType.Lz4HC:
-                        numWrite = LZ4Codec.Decode(srcBuffer, dstBuffer);
-                        break;
-                    case CompressionType.Zstd:
-                        numWrite = ZstdDecompressor.Unwrap(srcBuffer, dstBuffer);
-                        break;
-                    case CompressionType.Oodle:
-                        numWrite = OodleLZ.Decompress(srcBuffer, dstBuffer);
-                        break;
-                    default:
-                        throw new NotSupportedException();
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.Debug(e.ToString());
-                errorMsg = $"({Regex.Split(e.Message, MsgPattern, RegexOptions.CultureInvariant)[0]})";
-            }
-            return numWrite;
+            Logger.Debug(e.ToString());
+            errorMsg = $"({Regex.Split(e.Message, MsgPattern, RegexOptions.CultureInvariant)[0]})";
         }
+        return numWrite;
     }
 }

@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿namespace AssetStudio;
 
-namespace AssetStudio
+public class LocalSerializedObjectIdentifier
 {
-    public class LocalSerializedObjectIdentifier
-    {
-        public int localSerializedFileIndex;
-        public long localIdentifierInFile;
-    }
+    public int localSerializedFileIndex;
+    public long localIdentifierInFile;
 }

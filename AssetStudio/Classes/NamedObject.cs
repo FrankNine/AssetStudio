@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿namespace AssetStudio;
 
-namespace AssetStudio
+public class NamedObject : EditorExtension
 {
-    public class NamedObject : EditorExtension
+    public string m_Name;
+
+    protected NamedObject() { }
+
+    protected NamedObject(ObjectReader reader) : base(reader)
     {
-        public string m_Name;
-
-        protected NamedObject() { }
-
-        protected NamedObject(ObjectReader reader) : base(reader)
-        {
-            m_Name = reader.ReadAlignedString();
-        }
+        m_Name = reader.ReadAlignedString();
     }
 }

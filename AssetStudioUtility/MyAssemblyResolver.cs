@@ -1,12 +1,11 @@
-﻿using Mono.Cecil;
+﻿namespace AssetStudio;
 
-namespace AssetStudio
+using Mono.Cecil;
+
+public class MyAssemblyResolver : DefaultAssemblyResolver
 {
-    public class MyAssemblyResolver : DefaultAssemblyResolver
+    public void Register(AssemblyDefinition assembly)
     {
-        public void Register(AssemblyDefinition assembly)
-        {
-            RegisterAssembly(assembly);
-        }
+        RegisterAssembly(assembly);
     }
 }

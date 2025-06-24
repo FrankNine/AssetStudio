@@ -1,11 +1,10 @@
-﻿namespace AssetStudio
+﻿namespace AssetStudio;
+
+public enum ImageFormat
 {
-    public enum ImageFormat
-    {
-        Jpeg,
-        Png,
-        Bmp,
-        Tga,
-        Webp,
-    }
+    Jpeg,
+    Png,
+    Bmp,
+    Tga,
+    Webp,
 }

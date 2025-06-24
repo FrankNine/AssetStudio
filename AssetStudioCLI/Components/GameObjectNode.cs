@@ -1,14 +1,13 @@
+namespace AssetStudioCLI;
+
 using AssetStudio;
 
-namespace AssetStudioCLI
+internal class GameObjectNode : BaseNode
 {
-    internal class GameObjectNode : BaseNode
-    {
-        public GameObject gameObject;
+    public GameObject gameObject;
 
-        public GameObjectNode(GameObject gameObject) : base(gameObject.m_Name)
-        {
-            this.gameObject = gameObject;
-        }
+    public GameObjectNode(GameObject gameObject) : base(gameObject.m_Name)
+    {
+        this.gameObject = gameObject;
     }
 }

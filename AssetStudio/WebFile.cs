@@ -1,46 +1,45 @@
-﻿using System.Collections.Generic;
+﻿namespace AssetStudio;
+
 using System.IO;
 using System.Text;
+using System.Collections.Generic;
 
-namespace AssetStudio
+public class WebFile
 {
-    public class WebFile
+    public StreamFile[] fileList;
+
+    private class WebData
     {
-        public StreamFile[] fileList;
+        public int dataOffset;
+        public int dataLength;
+        public string path;
+    }
 
-        private class WebData
+    public WebFile(EndianBinaryReader reader)
+    {
+        reader.Endian = EndianType.LittleEndian;
+        var signature = reader.ReadStringToNull();
+        var headLength = reader.ReadInt32();
+        var dataList = new List<WebData>();
+        while (reader.BaseStream.Position < headLength)
         {
-            public int dataOffset;
-            public int dataLength;
-            public string path;
+            var data = new WebData();
+            data.dataOffset = reader.ReadInt32();
+            data.dataLength = reader.ReadInt32();
+            var pathLength = reader.ReadInt32();
+            data.path = Encoding.UTF8.GetString(reader.ReadBytes(pathLength));
+            dataList.Add(data);
         }
-
-        public WebFile(EndianBinaryReader reader)
+        fileList = new StreamFile[dataList.Count];
+        for (int i = 0; i < dataList.Count; i++)
         {
-            reader.Endian = EndianType.LittleEndian;
-            var signature = reader.ReadStringToNull();
-            var headLength = reader.ReadInt32();
-            var dataList = new List<WebData>();
-            while (reader.BaseStream.Position < headLength)
-            {
-                var data = new WebData();
-                data.dataOffset = reader.ReadInt32();
-                data.dataLength = reader.ReadInt32();
-                var pathLength = reader.ReadInt32();
-                data.path = Encoding.UTF8.GetString(reader.ReadBytes(pathLength));
-                dataList.Add(data);
-            }
-            fileList = new StreamFile[dataList.Count];
-            for (int i = 0; i < dataList.Count; i++)
-            {
-                var data = dataList[i];
-                var file = new StreamFile();
-                file.path = data.path;
-                file.fileName = Path.GetFileName(data.path);
-                reader.BaseStream.Position = data.dataOffset;
-                file.stream = new MemoryStream(reader.ReadBytes(data.dataLength));
-                fileList[i] = file;
-            }
+            var data = dataList[i];
+            var file = new StreamFile();
+            file.path = data.path;
+            file.fileName = Path.GetFileName(data.path);
+            reader.BaseStream.Position = data.dataOffset;
+            file.stream = new MemoryStream(reader.ReadBytes(data.dataLength));
+            fileList[i] = file;
         }
     }
 }

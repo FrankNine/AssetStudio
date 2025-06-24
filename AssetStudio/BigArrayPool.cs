@@ -1,14 +1,13 @@
-﻿using System.Buffers;
+﻿namespace AssetStudio;
 
-namespace AssetStudio
+using System.Buffers;
+
+public static class BigArrayPool<T>
 {
-    public static class BigArrayPool<T>
-    {
-        public static ArrayPool<T> Shared { get; }
+    public static ArrayPool<T> Shared { get; }
 
-        static BigArrayPool()
-        {
-            Shared = ArrayPool<T>.Create(256 * 1024 * 1024, 5);
-        }
+    static BigArrayPool()
+    {
+        Shared = ArrayPool<T>.Create(256 * 1024 * 1024, 5);
     }
 }
