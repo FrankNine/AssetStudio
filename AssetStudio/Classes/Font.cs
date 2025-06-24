@@ -68,22 +68,22 @@ public sealed class Font : NamedObject
             int m_CharacterRects_size = reader.ReadInt32();
             for (int i = 0; i < m_CharacterRects_size; i++)
             {
-                int index = reader.ReadInt32();
+                int m_Index = reader.ReadInt32();
                 //Rectf uv
-                float uvx = reader.ReadSingle();
-                float uvy = reader.ReadSingle();
-                float uvwidth = reader.ReadSingle();
-                float uvheight = reader.ReadSingle();
+                float m_Uvx = reader.ReadSingle();
+                float m_Uvy = reader.ReadSingle();
+                float m_Uvwidth = reader.ReadSingle();
+                float m_Uvheight = reader.ReadSingle();
                 //Rectf vert
-                float vertx = reader.ReadSingle();
-                float verty = reader.ReadSingle();
-                float vertwidth = reader.ReadSingle();
-                float vertheight = reader.ReadSingle();
-                float width = reader.ReadSingle();
+                float m_Vertx = reader.ReadSingle();
+                float m_Verty = reader.ReadSingle();
+                float m_Vertwidth = reader.ReadSingle();
+                float m_Vertheight = reader.ReadSingle();
+                float m_Width = reader.ReadSingle();
 
                 if (version >= 4)
                 {
-                    var flipped = reader.ReadBoolean();
+                    var m_Flipped = reader.ReadBoolean();
                     reader.AlignStream();
                 }
             }
@@ -93,9 +93,9 @@ public sealed class Font : NamedObject
             int m_KerningValues_size = reader.ReadInt32();
             for (int i = 0; i < m_KerningValues_size; i++)
             {
-                int pairfirst = reader.ReadInt16();
-                int pairsecond = reader.ReadInt16();
-                float second = reader.ReadSingle();
+                int m_Pairfirst = reader.ReadInt16();
+                int m_Pairsecond = reader.ReadInt16();
+                float m_Second = reader.ReadSingle();
             }
 
             if (version <= 3)

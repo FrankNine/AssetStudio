@@ -158,7 +158,7 @@ internal static class Exporter
         switch (item.Asset)
         {
             case Texture2D m_Texture2D:
-                if (!string.IsNullOrEmpty(m_Texture2D.m_StreamData?.path))
+                if (!string.IsNullOrEmpty(m_Texture2D.m_StreamData?.m_Path))
                 {
                     m_Texture2D.image_data.WriteData(exportFullPath.Replace(".dat", "_data.dat"));
                 }

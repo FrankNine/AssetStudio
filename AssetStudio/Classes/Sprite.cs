@@ -6,13 +6,13 @@ using System.Collections.Generic;
 
 public class SecondarySpriteTexture
 {
-    public PPtr<Texture2D> texture;
-    public string name;
+    public PPtr<Texture2D> m_Texture;
+    public string m_Name;
 
     public SecondarySpriteTexture(ObjectReader reader)
     {
-        texture = new PPtr<Texture2D>(reader);
-        name = reader.ReadAlignedString();
+        m_Texture = new PPtr<Texture2D>(reader);
+        m_Name = reader.ReadAlignedString();
     }
 }
 
@@ -39,47 +39,47 @@ public enum SpriteMeshType
 
 public class SpriteSettings
 {
-    public uint settingsRaw;
+    public uint m_SettingsRaw;
 
-    public uint packed;
-    public SpritePackingMode packingMode;
-    public SpritePackingRotation packingRotation;
-    public SpriteMeshType meshType;
+    public uint m_Packed;
+    public SpritePackingMode m_PackingMode;
+    public SpritePackingRotation m_PackingRotation;
+    public SpriteMeshType m_MeshType;
 
     public SpriteSettings(BinaryReader reader)
     {
-        settingsRaw = reader.ReadUInt32();
+        m_SettingsRaw = reader.ReadUInt32();
 
-        packed = settingsRaw & 1; //1
-        packingMode = (SpritePackingMode)((settingsRaw >> 1) & 1); //1
-        packingRotation = (SpritePackingRotation)((settingsRaw >> 2) & 0xf); //4
-        meshType = (SpriteMeshType)((settingsRaw >> 6) & 1); //1
+        m_Packed = m_SettingsRaw & 1; //1
+        m_PackingMode = (SpritePackingMode)((m_SettingsRaw >> 1) & 1); //1
+        m_PackingRotation = (SpritePackingRotation)((m_SettingsRaw >> 2) & 0xf); //4
+        m_MeshType = (SpriteMeshType)((m_SettingsRaw >> 6) & 1); //1
         //reserved
     }
 }
 
 public class SpriteVertex
 {
-    public Vector3 pos;
-    public Vector2 uv;
+    public Vector3 m_Pos;
+    public Vector2 m_Uv;
 
     public SpriteVertex(ObjectReader reader)
     {
         var version = reader.version;
 
-        pos = reader.ReadVector3();
+        m_Pos = reader.ReadVector3();
         if (version <= (4, 3)) //4.3 and down
         {
-            uv = reader.ReadVector2();
+            m_Uv = reader.ReadVector2();
         }
     }
 }
 
 public class SpriteRenderData
 {
-    public PPtr<Texture2D> texture;
-    public PPtr<Texture2D> alphaTexture;
-    public SecondarySpriteTexture[] secondaryTextures;
+    public PPtr<Texture2D> m_Texture;
+    public PPtr<Texture2D> m_AlphaTexture;
+    public SecondarySpriteTexture[] m_SecondaryTextures;
     public SubMesh[] m_SubMeshes;
     public byte[] m_IndexBuffer;
     public VertexData m_VertexData;
@@ -87,27 +87,27 @@ public class SpriteRenderData
     public ushort[] indices;
     public Matrix4x4[] m_Bindpose;
     public BoneWeights4[] m_SourceSkin;
-    public Rectf textureRect;
-    public Vector2 textureRectOffset;
-    public Vector2 atlasRectOffset;
-    public SpriteSettings settingsRaw;
-    public Vector4 uvTransform;
-    public float downscaleMultiplier;
+    public Rectf m_TextureRect;
+    public Vector2 m_TextureRectOffset;
+    public Vector2 m_AtlasRectOffset;
+    public SpriteSettings m_SettingsRaw;
+    public Vector4 m_UvTransform;
+    public float m_DownscaleMultiplier;
 
     public SpriteRenderData(ObjectReader reader)
     {
         var version = reader.version;
 
-        texture = new PPtr<Texture2D>(reader);
-        alphaTexture = version >= (5, 2) ? new PPtr<Texture2D>(reader) : new PPtr<Texture2D>(); //5.2 and up
+        m_Texture = new PPtr<Texture2D>(reader);
+        m_AlphaTexture = version >= (5, 2) ? new PPtr<Texture2D>(reader) : new PPtr<Texture2D>(); //5.2 and up
 
         if (version >= 2019) //2019 and up
         {
             var secondaryTexturesSize = reader.ReadInt32();
-            secondaryTextures = new SecondarySpriteTexture[secondaryTexturesSize];
+            m_SecondaryTextures = new SecondarySpriteTexture[secondaryTexturesSize];
             for (int i = 0; i < secondaryTexturesSize; i++)
             {
-                secondaryTextures[i] = new SecondarySpriteTexture(reader);
+                m_SecondaryTextures[i] = new SecondarySpriteTexture(reader);
             }
         }
 
@@ -152,39 +152,39 @@ public class SpriteRenderData
             }
         }
 
-        textureRect = new Rectf(reader);
-        textureRectOffset = reader.ReadVector2();
+        m_TextureRect = new Rectf(reader);
+        m_TextureRectOffset = reader.ReadVector2();
         if (version >= (5, 6)) //5.6 and up
         {
-            atlasRectOffset = reader.ReadVector2();
+            m_AtlasRectOffset = reader.ReadVector2();
         }
 
-        settingsRaw = new SpriteSettings(reader);
+        m_SettingsRaw = new SpriteSettings(reader);
         if (version >= (4, 5)) //4.5 and up
         {
-            uvTransform = reader.ReadVector4();
+            m_UvTransform = reader.ReadVector4();
         }
 
         if (version >= 2017) //2017 and up
         {
-            downscaleMultiplier = reader.ReadSingle();
+            m_DownscaleMultiplier = reader.ReadSingle();
         }
     }
 }
 
 public class Rectf
 {
-    public float x;
-    public float y;
-    public float width;
-    public float height;
+    public float m_X;
+    public float m_Y;
+    public float m_Width;
+    public float m_Height;
 
     public Rectf(BinaryReader reader)
     {
-        x = reader.ReadSingle();
-        y = reader.ReadSingle();
-        width = reader.ReadSingle();
-        height = reader.ReadSingle();
+        m_X = reader.ReadSingle();
+        m_Y = reader.ReadSingle();
+        m_Width = reader.ReadSingle();
+        m_Height = reader.ReadSingle();
     }
 }
 

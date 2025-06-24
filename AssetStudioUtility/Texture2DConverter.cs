@@ -33,7 +33,7 @@ public class Texture2DConverter
         m_TextureFormat = m_Texture2D.m_TextureFormat;
         m_PlatformBlob = m_Texture2D.m_PlatformBlob;
         version = m_Texture2D.version;
-        platform = m_Texture2D.platform;
+        platform = m_Texture2D.m_Platform;
         // not guaranteed, you can have a swizzled texture without m_PlatformBlob
         // but officially, I don't think this can happen. maybe check which engine
         // version this started happening in...
@@ -561,25 +561,17 @@ public class Texture2DConverter
         return true;
     }
 
-    private bool DecodeBC4(byte[] image_data, byte[] buff)
-    {
-        return TextureDecoder.DecodeBC4(image_data, m_Width, m_Height, buff);
-    }
+    private bool DecodeBC4(byte[] image_data, byte[] buff) 
+        => TextureDecoder.DecodeBC4(image_data, m_Width, m_Height, buff);
 
-    private bool DecodeBC5(byte[] image_data, byte[] buff)
-    {
-        return TextureDecoder.DecodeBC5(image_data, m_Width, m_Height, buff);
-    }
+    private bool DecodeBC5(byte[] image_data, byte[] buff) 
+        => TextureDecoder.DecodeBC5(image_data, m_Width, m_Height, buff);
 
-    private bool DecodeBC6H(byte[] image_data, byte[] buff)
-    {
-        return TextureDecoder.DecodeBC6(image_data, m_Width, m_Height, buff);
-    }
+    private bool DecodeBC6H(byte[] image_data, byte[] buff) 
+        => TextureDecoder.DecodeBC6(image_data, m_Width, m_Height, buff);
 
-    private bool DecodeBC7(byte[] image_data, byte[] buff)
-    {
-        return TextureDecoder.DecodeBC7(image_data, m_Width, m_Height, buff);
-    }
+    private bool DecodeBC7(byte[] image_data, byte[] buff) 
+        => TextureDecoder.DecodeBC7(image_data, m_Width, m_Height, buff);
 
     private bool DecodeDXT1Crunched(byte[] image_data, byte[] buff)
     {
@@ -606,64 +598,40 @@ public class Texture2DConverter
     }
 
     private bool DecodePVRTC(byte[] image_data, byte[] buff, bool is2bpp)
-    {
-        return TextureDecoder.DecodePVRTC(image_data, m_Width, m_Height, buff, is2bpp);
-    }
+        => TextureDecoder.DecodePVRTC(image_data, m_Width, m_Height, buff, is2bpp);
 
     private bool DecodeETC1(byte[] image_data, byte[] buff)
-    {
-        return TextureDecoder.DecodeETC1(image_data, m_Width, m_Height, buff);
-    }
+        => TextureDecoder.DecodeETC1(image_data, m_Width, m_Height, buff);
 
     private bool DecodeATCRGB4(byte[] image_data, byte[] buff)
-    {
-        return TextureDecoder.DecodeATCRGB4(image_data, m_Width, m_Height, buff);
-    }
+        => TextureDecoder.DecodeATCRGB4(image_data, m_Width, m_Height, buff);
 
     private bool DecodeATCRGBA8(byte[] image_data, byte[] buff)
-    {
-        return TextureDecoder.DecodeATCRGBA8(image_data, m_Width, m_Height, buff);
-    }
+        => TextureDecoder.DecodeATCRGBA8(image_data, m_Width, m_Height, buff);
 
     private bool DecodeEACR(byte[] image_data, byte[] buff)
-    {
-        return TextureDecoder.DecodeEACR(image_data, m_Width, m_Height, buff);
-    }
+        => TextureDecoder.DecodeEACR(image_data, m_Width, m_Height, buff);
 
     private bool DecodeEACRSigned(byte[] image_data, byte[] buff)
-    {
-        return TextureDecoder.DecodeEACRSigned(image_data, m_Width, m_Height, buff);
-    }
+        => TextureDecoder.DecodeEACRSigned(image_data, m_Width, m_Height, buff);
 
     private bool DecodeEACRG(byte[] image_data, byte[] buff)
-    {
-        return TextureDecoder.DecodeEACRG(image_data, m_Width, m_Height, buff);
-    }
+        => TextureDecoder.DecodeEACRG(image_data, m_Width, m_Height, buff);
 
     private bool DecodeEACRGSigned(byte[] image_data, byte[] buff)
-    {
-        return TextureDecoder.DecodeEACRGSigned(image_data, m_Width, m_Height, buff);
-    }
+        => TextureDecoder.DecodeEACRGSigned(image_data, m_Width, m_Height, buff);
 
     private bool DecodeETC2(byte[] image_data, byte[] buff)
-    {
-        return TextureDecoder.DecodeETC2(image_data, m_Width, m_Height, buff);
-    }
+        => TextureDecoder.DecodeETC2(image_data, m_Width, m_Height, buff);
 
     private bool DecodeETC2A1(byte[] image_data, byte[] buff)
-    {
-        return TextureDecoder.DecodeETC2A1(image_data, m_Width, m_Height, buff);
-    }
+        => TextureDecoder.DecodeETC2A1(image_data, m_Width, m_Height, buff);
 
     private bool DecodeETC2A8(byte[] image_data, byte[] buff)
-    {
-        return TextureDecoder.DecodeETC2A8(image_data, m_Width, m_Height, buff);
-    }
+        => TextureDecoder.DecodeETC2A8(image_data, m_Width, m_Height, buff);
 
     private bool DecodeASTC(byte[] image_data, byte[] buff, int blocksize)
-    {
-        return TextureDecoder.DecodeASTC(image_data, m_Width, m_Height, blocksize, blocksize, buff);
-    }
+        => TextureDecoder.DecodeASTC(image_data, m_Width, m_Height, blocksize, blocksize, buff);
 
     private bool DecodeRG16(byte[] image_data, byte[] buff)
     {

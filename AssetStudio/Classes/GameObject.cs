@@ -24,13 +24,15 @@ public sealed class GameObject : EditorExtension
         {
             if (version < (5, 5)) //5.5 down
             {
-                var first = reader.ReadInt32();
+                var m_First = reader.ReadInt32();
             }
             m_Components[i] = new PPtr<Component>(reader);
         }
 
         var m_Layer = reader.ReadInt32();
-        if (version.IsTuanjie && (version > (2022, 3, 2) || (version == (2022, 3, 2) && version.Build >= 13))) //2022.3.2t13(?) and up
+        if (version.IsTuanjie && 
+            (version > (2022, 3, 2) ||
+            (version == (2022, 3, 2) && version.Build >= 13))) //2022.3.2t13(?) and up
         {
             var m_HasEditorInfo = reader.ReadBoolean();
             reader.AlignStream();

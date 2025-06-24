@@ -26,21 +26,21 @@ public static class SpriteHelper
     {
         if (m_Sprite.m_SpriteAtlas != null && m_Sprite.m_SpriteAtlas.TryGet(out var m_SpriteAtlas))
         {
-            if (m_SpriteAtlas.m_RenderDataMap.TryGetValue(m_Sprite.m_RenderDataKey, out var spriteAtlasData) && spriteAtlasData.texture.TryGet(out var m_Texture2D))
+            if (m_SpriteAtlas.m_RenderDataMap.TryGetValue(m_Sprite.m_RenderDataKey, out var spriteAtlasData) && spriteAtlasData.m_Texture.TryGet(out var m_Texture2D))
             {
-                return CutImage(m_Sprite, m_Texture2D, spriteAtlasData.textureRect, spriteAtlasData.textureRectOffset, spriteAtlasData.downscaleMultiplier, spriteAtlasData.settingsRaw);
+                return CutImage(m_Sprite, m_Texture2D, spriteAtlasData.m_TextureRect, spriteAtlasData.m_TextureRectOffset, spriteAtlasData.m_DownscaleMultiplier, spriteAtlasData.m_SettingsRaw);
             }
         }
         else
         {
-            if (m_Sprite.m_RD.texture.TryGet(out var m_Texture2D) && m_Sprite.m_RD.alphaTexture.TryGet(out var m_AlphaTexture2D) && spriteMaskMode != SpriteMaskMode.Off)
+            if (m_Sprite.m_RD.m_Texture.TryGet(out var m_Texture2D) && m_Sprite.m_RD.m_AlphaTexture.TryGet(out var m_AlphaTexture2D) && spriteMaskMode != SpriteMaskMode.Off)
             {
                 Image<Bgra32> tex = null;
                 if (spriteMaskMode != SpriteMaskMode.MaskOnly)
                 {
-                    tex = CutImage(m_Sprite, m_Texture2D, m_Sprite.m_RD.textureRect, m_Sprite.m_RD.textureRectOffset, m_Sprite.m_RD.downscaleMultiplier, m_Sprite.m_RD.settingsRaw);
+                    tex = CutImage(m_Sprite, m_Texture2D, m_Sprite.m_RD.m_TextureRect, m_Sprite.m_RD.m_TextureRectOffset, m_Sprite.m_RD.m_DownscaleMultiplier, m_Sprite.m_RD.m_SettingsRaw);
                 }
-                var alphaTex = CutImage(m_Sprite, m_AlphaTexture2D, m_Sprite.m_RD.textureRect, m_Sprite.m_RD.textureRectOffset, m_Sprite.m_RD.downscaleMultiplier, m_Sprite.m_RD.settingsRaw);
+                var alphaTex = CutImage(m_Sprite, m_AlphaTexture2D, m_Sprite.m_RD.m_TextureRect, m_Sprite.m_RD.m_TextureRectOffset, m_Sprite.m_RD.m_DownscaleMultiplier, m_Sprite.m_RD.m_SettingsRaw);
 
                 switch (spriteMaskMode)
                 {
@@ -54,9 +54,9 @@ public static class SpriteHelper
                         return alphaTex;
                 }
             }
-            else if (m_Sprite.m_RD.texture.TryGet(out m_Texture2D))
+            else if (m_Sprite.m_RD.m_Texture.TryGet(out m_Texture2D))
             {
-                return CutImage(m_Sprite, m_Texture2D, m_Sprite.m_RD.textureRect, m_Sprite.m_RD.textureRectOffset, m_Sprite.m_RD.downscaleMultiplier, m_Sprite.m_RD.settingsRaw);
+                return CutImage(m_Sprite, m_Texture2D, m_Sprite.m_RD.m_TextureRect, m_Sprite.m_RD.m_TextureRectOffset, m_Sprite.m_RD.m_DownscaleMultiplier, m_Sprite.m_RD.m_SettingsRaw);
             }
         }
         return null;
@@ -99,19 +99,19 @@ public static class SpriteHelper
                 var height = (int)(m_Texture2D.m_Height / downscaleMultiplier);
                 originalImage.Mutate(x => x.Resize(width, height));
             }
-            var rectX = (int)MathF.Floor(textureRect.x);
-            var rectY = (int)MathF.Floor(textureRect.y);
-            var rectRight = (int)MathF.Ceiling(textureRect.x + textureRect.width);
-            var rectBottom = (int)MathF.Ceiling(textureRect.y + textureRect.height);
+            var rectX = (int)MathF.Floor(textureRect.m_X);
+            var rectY = (int)MathF.Floor(textureRect.m_Y);
+            var rectRight = (int)MathF.Ceiling(textureRect.m_X + textureRect.m_Width);
+            var rectBottom = (int)MathF.Ceiling(textureRect.m_Y + textureRect.m_Height);
             rectRight = Math.Min(rectRight, originalImage.Width);
             rectBottom = Math.Min(rectBottom, originalImage.Height);
             var rect = new Rectangle(rectX, rectY, rectRight - rectX, rectBottom - rectY);
             var spriteImage = originalImage.Clone(x => x.Crop(rect));
             originalImage.Dispose();
-            if (settingsRaw.packed == 1)
+            if (settingsRaw.m_Packed == 1)
             {
                 //RotateAndFlip
-                switch (settingsRaw.packingRotation)
+                switch (settingsRaw.m_PackingRotation)
                 {
                     case SpritePackingRotation.FlipHorizontal:
                         spriteImage.Mutate(x => x.Flip(FlipMode.Horizontal));
@@ -129,12 +129,12 @@ public static class SpriteHelper
             }
 
             //Tight
-            if (settingsRaw.packingMode == SpritePackingMode.Tight)
+            if (settingsRaw.m_PackingMode == SpritePackingMode.Tight)
             {
                 try
                 {
                     var matrix = Matrix3x2.CreateScale(m_Sprite.m_PixelsToUnits);
-                    matrix *= Matrix3x2.CreateTranslation(m_Sprite.m_Rect.width * m_Sprite.m_Pivot.X - textureRectOffset.X, m_Sprite.m_Rect.height * m_Sprite.m_Pivot.Y - textureRectOffset.Y);
+                    matrix *= Matrix3x2.CreateTranslation(m_Sprite.m_Rect.m_Width * m_Sprite.m_Pivot.X - textureRectOffset.X, m_Sprite.m_Rect.m_Height * m_Sprite.m_Pivot.Y - textureRectOffset.Y);
                     var triangles = GetTriangles(m_Sprite.m_RD);
                     var points = triangles.Select(x => x.Select(y => new PointF(y.X, y.Y)).ToArray());
                     var pathBuilder = new PathBuilder(matrix);
@@ -193,7 +193,7 @@ public static class SpriteHelper
     {
         if (m_RD.vertices != null) //5.6 down
         {
-            var vertices = m_RD.vertices.Select(x => (Vector2)x.pos).ToArray();
+            var vertices = m_RD.vertices.Select(x => (Vector2)x.m_Pos).ToArray();
             var triangleCount = m_RD.indices.Length / 3;
             var triangles = new Vector2[triangleCount][];
             for (int i = 0; i < triangleCount; i++)
@@ -211,30 +211,30 @@ public static class SpriteHelper
             var triangles = new List<Vector2[]>();
             var m_VertexData = m_RD.m_VertexData;
             var m_Channel = m_VertexData.m_Channels[0]; //kShaderChannelVertex
-            var m_Stream = m_VertexData.m_Streams[m_Channel.stream];
+            var m_Stream = m_VertexData.m_Streams[m_Channel.m_Stream];
             using (var vertexReader = new BinaryReader(new MemoryStream(m_VertexData.m_DataSize)))
             {
                 using (var indexReader = new BinaryReader(new MemoryStream(m_RD.m_IndexBuffer)))
                 {
                     foreach (var subMesh in m_RD.m_SubMeshes)
                     {
-                        vertexReader.BaseStream.Position = m_Stream.offset + subMesh.firstVertex * m_Stream.stride + m_Channel.offset;
+                        vertexReader.BaseStream.Position = m_Stream.m_Offset + subMesh.m_FirstVertex * m_Stream.m_Stride + m_Channel.m_Offset;
 
-                        var vertices = new Vector2[subMesh.vertexCount];
-                        for (int v = 0; v < subMesh.vertexCount; v++)
+                        var vertices = new Vector2[subMesh.m_VertexCount];
+                        for (int v = 0; v < subMesh.m_VertexCount; v++)
                         {
                             vertices[v] = vertexReader.ReadVector3();
-                            vertexReader.BaseStream.Position += m_Stream.stride - 12;
+                            vertexReader.BaseStream.Position += m_Stream.m_Stride - 12;
                         }
 
-                        indexReader.BaseStream.Position = subMesh.firstByte;
+                        indexReader.BaseStream.Position = subMesh.m_FirstByte;
 
-                        var triangleCount = subMesh.indexCount / 3u;
+                        var triangleCount = subMesh.m_IndexCount / 3u;
                         for (int i = 0; i < triangleCount; i++)
                         {
-                            var first = indexReader.ReadUInt16() - subMesh.firstVertex;
-                            var second = indexReader.ReadUInt16() - subMesh.firstVertex;
-                            var third = indexReader.ReadUInt16() - subMesh.firstVertex;
+                            var first = indexReader.ReadUInt16() - subMesh.m_FirstVertex;
+                            var second = indexReader.ReadUInt16() - subMesh.m_FirstVertex;
+                            var third = indexReader.ReadUInt16() - subMesh.m_FirstVertex;
                             var triangle = new[] { vertices[first], vertices[second], vertices[third] };
                             triangles.Add(triangle);
                         }

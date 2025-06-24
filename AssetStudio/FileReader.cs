@@ -9,11 +9,11 @@ public class FileReader : EndianBinaryReader
     public string FileName;
     public FileType FileType;
 
-    private static readonly byte[] gzipMagic = { 0x1f, 0x8b };
-    private static readonly byte[] brotliMagic = { 0x62, 0x72, 0x6F, 0x74, 0x6C, 0x69 };
-    private static readonly byte[] zipMagic = { 0x50, 0x4B, 0x03, 0x04 };
-    private static readonly byte[] zipSpannedMagic = { 0x50, 0x4B, 0x07, 0x08 };
-    private static readonly byte[] unityFsMagic = {0x55, 0x6E, 0x69, 0x74, 0x79, 0x46, 0x53};
+    private static readonly byte[] gzipMagic = [0x1f, 0x8b];
+    private static readonly byte[] brotliMagic = [0x62, 0x72, 0x6F, 0x74, 0x6C, 0x69];
+    private static readonly byte[] zipMagic = [0x50, 0x4B, 0x03, 0x04];
+    private static readonly byte[] zipSpannedMagic = [0x50, 0x4B, 0x07, 0x08];
+    private static readonly byte[] unityFsMagic = [0x55, 0x6E, 0x69, 0x74, 0x79, 0x46, 0x53];
     private static readonly int headerBuffLen = 1152;
     private static byte[] headerBuff = new byte[headerBuffLen];
 

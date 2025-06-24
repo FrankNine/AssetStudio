@@ -4,19 +4,19 @@ using System.Collections.Generic;
 
 public class HumanPoseMask
 {
-    public uint word0;
-    public uint word1;
-    public uint word2;
+    public uint m_Word0;
+    public uint m_Word1;
+    public uint m_Word2;
 
     public HumanPoseMask(ObjectReader reader)
     {
         var version = reader.version;
 
-        word0 = reader.ReadUInt32();
-        word1 = reader.ReadUInt32();
+        m_Word0 = reader.ReadUInt32();
+        m_Word1 = reader.ReadUInt32();
         if (version >= (5, 2)) //5.2 and up
         {
-            word2 = reader.ReadUInt32();
+            m_Word2 = reader.ReadUInt32();
         }
     }
 }
@@ -210,10 +210,8 @@ public class Blend1dDataConstant // wrong labeled
 {
     public float[] m_ChildThresholdArray;
 
-    public Blend1dDataConstant(ObjectReader reader)
-    {
-        m_ChildThresholdArray = reader.ReadSingleArray();
-    }
+    public Blend1dDataConstant(ObjectReader reader) 
+        => m_ChildThresholdArray = reader.ReadSingleArray();
 }
 
 public class BlendDirectDataConstant

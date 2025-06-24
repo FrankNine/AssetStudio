@@ -86,22 +86,20 @@ public class TypeDefinitionConverter
         }
         catch (Exception ex)
         {
-            throw new Exception(string.Format("Exception while processing {0} {1}, error {2}", fieldDefinition.FieldType.FullName, fieldDefinition.FullName, ex.Message));
+            throw new Exception(
+                $"Exception while processing {fieldDefinition.FieldType.FullName} {fieldDefinition.FullName}, error {ex.Message}");
         }
     }
 
-    private static bool IsHiddenByParentClass(IEnumerable<TypeReference> parentTypes, FieldDefinition fieldDefinition, TypeDefinition processingType)
-    {
-        return processingType.Fields.Any(f => f.Name == fieldDefinition.Name) || parentTypes.Any(t => t.Resolve().Fields.Any(f => f.Name == fieldDefinition.Name));
-    }
+    private static bool IsHiddenByParentClass(IEnumerable<TypeReference> parentTypes, FieldDefinition fieldDefinition, TypeDefinition processingType) 
+        => processingType.Fields.Any(f => f.Name == fieldDefinition.Name) || 
+           parentTypes.Any(t => t.Resolve().Fields.Any(f => f.Name == fieldDefinition.Name));
 
-    private IEnumerable<FieldDefinition> FilteredFields()
-    {
-        return TypeDef.Fields.Where(WillUnitySerialize).Where(f =>
+    private IEnumerable<FieldDefinition> FilteredFields() 
+        => TypeDef.Fields.Where(WillUnitySerialize).Where(f =>
             UnitySerializationLogic.IsSupportedCollection(f.FieldType) ||
             !f.FieldType.IsGenericInstance ||
             UnitySerializationLogic.ShouldImplementIDeserializable(f.FieldType.Resolve()));
-    }
 
     private FieldReference ResolveGenericFieldReference(FieldReference fieldRef)
     {
@@ -130,15 +128,11 @@ public class TypeDefinitionConverter
         return TypeRefToTypeTreeNodes(typeRef, fieldDef.Name, Indent, false);
     }
 
-    private static bool IsStruct(TypeReference typeRef)
-    {
-        return typeRef.IsValueType && !IsEnum(typeRef) && !typeRef.IsPrimitive;
-    }
+    private static bool IsStruct(TypeReference typeRef) 
+        => typeRef.IsValueType && !IsEnum(typeRef) && !typeRef.IsPrimitive;
 
-    private static bool IsEnum(TypeReference typeRef)
-    {
-        return !typeRef.IsArray && typeRef.Resolve().IsEnum;
-    }
+    private static bool IsEnum(TypeReference typeRef) 
+        => !typeRef.IsArray && typeRef.Resolve().IsEnum;
 
     private static bool RequiresAlignment(TypeReference typeRef)
     {
@@ -156,10 +150,8 @@ public class TypeDefinitionConverter
         }
     }
 
-    private static bool IsSystemString(TypeReference typeRef)
-    {
-        return typeRef.FullName == "System.String";
-    }
+    private static bool IsSystemString(TypeReference typeRef) 
+        => typeRef.FullName == "System.String";
 
     private List<TypeTreeNode> TypeRefToTypeTreeNodes(TypeReference typeRef, string name, int indent, bool isElement)
     {

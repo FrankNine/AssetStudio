@@ -8,27 +8,27 @@ using System.Text.Json;
 
 public class Keyframe<T>
 {
-    public float time;
-    public T value;
-    public T inSlope;
-    public T outSlope;
-    public int weightedMode;
-    public T inWeight;
-    public T outWeight;
+    public float m_Time;
+    public T m_Value;
+    public T m_InSlope;
+    public T m_OutSlope;
+    public int m_WeightedMode;
+    public T m_InWeight;
+    public T m_OutWeight;
 
     public Keyframe() { }
 
     public Keyframe(ObjectReader reader, Func<T> readerFunc)
     {
-        time = reader.ReadSingle();
-        value = readerFunc();
-        inSlope = readerFunc();
-        outSlope = readerFunc();
+        m_Time = reader.ReadSingle();
+        m_Value = readerFunc();
+        m_InSlope = readerFunc();
+        m_OutSlope = readerFunc();
         if (reader.version >= 2018) //2018 and up
         {
-            weightedMode = reader.ReadInt32();
-            inWeight = readerFunc();
-            outWeight = readerFunc();
+            m_WeightedMode = reader.ReadInt32();
+            m_InWeight = readerFunc();
+            m_OutWeight = readerFunc();
         }
     }
 }
@@ -39,8 +39,6 @@ public class AnimationCurve<T>
     public int m_PreInfinity;
     public int m_PostInfinity;
     public int m_RotationOrder;
-
-    public AnimationCurve() { }
 
     public AnimationCurve(ObjectReader reader, Func<T> readerFunc)
     {
@@ -62,15 +60,13 @@ public class AnimationCurve<T>
 
 public class QuaternionCurve
 {
-    public AnimationCurve<Quaternion> curve;
-    public string path;
-
-    public QuaternionCurve() { }
+    public AnimationCurve<Quaternion> m_Curve;
+    public string m_Path;
 
     public QuaternionCurve(ObjectReader reader)
     {
-        curve = new AnimationCurve<Quaternion>(reader, reader.ReadQuaternion);
-        path = reader.ReadAlignedString();
+        m_Curve = new AnimationCurve<Quaternion>(reader, reader.ReadQuaternion);
+        m_Path = reader.ReadAlignedString();
     }
 }
 
@@ -81,8 +77,6 @@ public class PackedFloatVector
     public float m_Start;
     public byte[] m_Data;
     public byte m_BitSize;
-
-    public PackedFloatVector() { }
 
     public PackedFloatVector(ObjectReader reader)
     {
@@ -143,8 +137,6 @@ public class PackedIntVector
     public byte[] m_Data;
     public byte m_BitSize;
 
-    public PackedIntVector() { }
-
     public PackedIntVector(ObjectReader reader)
     {
         m_NumItems = reader.ReadUInt32();
@@ -188,8 +180,6 @@ public class PackedQuatVector
 {
     public uint m_NumItems;
     public byte[] m_Data;
-
-    public PackedQuatVector() { }
 
     public PackedQuatVector(ObjectReader reader)
     {
@@ -275,8 +265,6 @@ public class CompressedAnimationCurve
     public int m_PreInfinity;
     public int m_PostInfinity;
 
-    public CompressedAnimationCurve() { }
-
     public CompressedAnimationCurve(ObjectReader reader)
     {
         m_Path = reader.ReadAlignedString();
@@ -290,84 +278,76 @@ public class CompressedAnimationCurve
 
 public class Vector3Curve
 {
-    public AnimationCurve<Vector3> curve;
-    public string path;
-
-    public Vector3Curve() { }
+    public AnimationCurve<Vector3> m_Curve;
+    public string m_Path;
 
     public Vector3Curve(ObjectReader reader)
     {
-        curve = new AnimationCurve<Vector3>(reader, reader.ReadVector3);
-        path = reader.ReadAlignedString();
+        m_Curve = new AnimationCurve<Vector3>(reader, reader.ReadVector3);
+        m_Path = reader.ReadAlignedString();
     }
 }
 
 public class FloatCurve
 {
-    public AnimationCurve<float> curve;
-    public string attribute;
-    public string path;
-    public ClassIDType classID;
-    public PPtr<MonoScript> script;
-    public int flags;
-
-    public FloatCurve() { }
+    public AnimationCurve<float> m_Curve;
+    public string m_Attribute;
+    public string m_Path;
+    public ClassIDType m_ClassID;
+    public PPtr<MonoScript> m_Script;
+    public int m_Flags;
 
     public FloatCurve(ObjectReader reader)
     {
-        curve = new AnimationCurve<float>(reader, reader.ReadSingle);
-        attribute = reader.ReadAlignedString();
-        path = reader.ReadAlignedString();
-        classID = (ClassIDType)reader.ReadInt32();
-        script = new PPtr<MonoScript>(reader);
+        m_Curve = new AnimationCurve<float>(reader, reader.ReadSingle);
+        m_Attribute = reader.ReadAlignedString();
+        m_Path = reader.ReadAlignedString();
+        m_ClassID = (ClassIDType)reader.ReadInt32();
+        m_Script = new PPtr<MonoScript>(reader);
         if (reader.version >= (2022, 2)) //2022.2 and up
         {
-            flags = reader.ReadInt32();
+            m_Flags = reader.ReadInt32();
         }
     }
 }
 
 public class PPtrKeyframe
 {
-    public float time;
-    public PPtr<Object> value;
-
-    public PPtrKeyframe() { }
+    public float m_Time;
+    public PPtr<Object> m_Value;
 
     public PPtrKeyframe(ObjectReader reader)
     {
-        time = reader.ReadSingle();
-        value = new PPtr<Object>(reader);
+        m_Time = reader.ReadSingle();
+        m_Value = new PPtr<Object>(reader);
     }
 }
 
 public class PPtrCurve
 {
-    public PPtrKeyframe[] curve;
-    public string attribute;
-    public string path;
-    public int classID;
-    public PPtr<MonoScript> script;
-    public int flags;
-
-    public PPtrCurve() { }
+    public PPtrKeyframe[] m_Curve;
+    public string m_Attribute;
+    public string m_Path;
+    public int m_ClassID;
+    public PPtr<MonoScript> m_Script;
+    public int m_Flags;
 
     public PPtrCurve(ObjectReader reader)
     {
         int numCurves = reader.ReadInt32();
-        curve = new PPtrKeyframe[numCurves];
+        m_Curve = new PPtrKeyframe[numCurves];
         for (int i = 0; i < numCurves; i++)
         {
-            curve[i] = new PPtrKeyframe(reader);
+            m_Curve[i] = new PPtrKeyframe(reader);
         }
 
-        attribute = reader.ReadAlignedString();
-        path = reader.ReadAlignedString();
-        classID = reader.ReadInt32();
-        script = new PPtr<MonoScript>(reader);
+        m_Attribute = reader.ReadAlignedString();
+        m_Path = reader.ReadAlignedString();
+        m_ClassID = reader.ReadInt32();
+        m_Script = new PPtr<MonoScript>(reader);
         if (reader.version >= (2022, 2)) //2022.2 and up
         {
-            flags = reader.ReadInt32();
+            m_Flags = reader.ReadInt32();
         }
     }
 }
@@ -377,8 +357,6 @@ public class AABB
     public Vector3 m_Center;
     public Vector3 m_Extent;
 
-    public AABB() { }
-
     public AABB(ObjectReader reader)
     {
         m_Center = reader.ReadVector3();
@@ -386,26 +364,24 @@ public class AABB
     }
 }
 
-public class xform
+public class xForm
 {
-    public Vector3 t;
-    public Quaternion q;
-    public Vector3 s;
+    public Vector3 m_T;
+    public Quaternion m_Q;
+    public Vector3 m_S;
 
-    public xform() { }
-
-    public xform(ObjectReader reader)
+    public xForm(ObjectReader reader)
     {
         var version = reader.version;
-        t = version >= (5, 4) ? reader.ReadVector3() : (Vector3)reader.ReadVector4();//5.4 and up
-        q = reader.ReadQuaternion();
-        s = version >= (5, 4) ? reader.ReadVector3() : (Vector3)reader.ReadVector4();//5.4 and up
+        m_T = version >= (5, 4) ? reader.ReadVector3() : (Vector3)reader.ReadVector4();//5.4 and up
+        m_Q = reader.ReadQuaternion();
+        m_S = version >= (5, 4) ? reader.ReadVector3() : (Vector3)reader.ReadVector4();//5.4 and up
     }
 }
 
 public class HandPose
 {
-    public xform m_GrabX;
+    public xForm m_GrabX;
     public float[] m_DoFArray;
     public float m_Override;
     public float m_CloseOpen;
@@ -416,7 +392,7 @@ public class HandPose
 
     public HandPose(ObjectReader reader)
     {
-        m_GrabX = new xform(reader);
+        m_GrabX = new xForm(reader);
         m_DoFArray = reader.ReadSingleArray();
         m_Override = reader.ReadSingle();
         m_CloseOpen = reader.ReadSingle();
@@ -427,18 +403,16 @@ public class HandPose
 
 public class HumanGoal
 {
-    public xform m_X;
+    public xForm m_X;
     public float m_WeightT;
     public float m_WeightR;
     public Vector3 m_HintT;
     public float m_HintWeightT;
 
-    public HumanGoal() { }
-
     public HumanGoal(ObjectReader reader)
     {
         var version = reader.version;
-        m_X = new xform(reader);
+        m_X = new xForm(reader);
         m_WeightT = reader.ReadSingle();
         m_WeightR = reader.ReadSingle();
         if (version >= 5)//5.0 and up
@@ -451,7 +425,7 @@ public class HumanGoal
 
 public class HumanPose
 {
-    public xform m_RootX;
+    public xForm m_RootX;
     public Vector3 m_LookAtPosition;
     public Vector4 m_LookAtWeight;
     public HumanGoal[] m_GoalArray;
@@ -460,12 +434,10 @@ public class HumanPose
     public float[] m_DoFArray;
     public Vector3[] m_TDoFArray;
 
-    public HumanPose() { }
-
     public HumanPose(ObjectReader reader)
     {
         var version = reader.version;
-        m_RootX = new xform(reader);
+        m_RootX = new xForm(reader);
         m_LookAtPosition = version >= (5, 4) ? reader.ReadVector3() : (Vector3)reader.ReadVector4();//5.4 and up
         m_LookAtWeight = reader.ReadVector4();
 
@@ -495,115 +467,111 @@ public class HumanPose
 
 public class StreamedClip
 {
-    public uint[] data;
-    public uint curveCount;
+    public uint[] m_Data;
+    public uint m_CurveCount;
 
     public StreamedClip() { }
 
     public StreamedClip(ObjectReader reader)
     {
         var version = reader.version;
-        data = reader.ReadUInt32Array();
+        m_Data = reader.ReadUInt32Array();
         if (version.IsInRange((2022, 3, 19), 2023) //2022.3.19f1 to 2023
             || version >= (2023, 2, 8)) //2023.2.8f1 and up
         {
-            curveCount = reader.ReadUInt16();
-            var discreteCurveCount = reader.ReadUInt16();
+            m_CurveCount = reader.ReadUInt16();
+            var m_DiscreteCurveCount = reader.ReadUInt16();
         }
         else
         {
-            curveCount = reader.ReadUInt32();
+            m_CurveCount = reader.ReadUInt32();
         }
     }
 
     public class StreamedCurveKey
     {
-        public int index;
-        public float[] coeff;
+        public int m_Index;
+        public float[] m_Coeff;
 
-        public float value;
-        public float outSlope;
-        public float inSlope;
-
-        public StreamedCurveKey() { }
+        public float m_Value;
+        public float m_OutSlope;
+        public float m_InSlope;
 
         public StreamedCurveKey(BinaryReader reader)
         {
-            index = reader.ReadInt32();
-            coeff = reader.ReadSingleArray(4);
+            m_Index = reader.ReadInt32();
+            m_Coeff = reader.ReadSingleArray(4);
 
-            outSlope = coeff[2];
-            value = coeff[3];
+            m_OutSlope = m_Coeff[2];
+            m_Value = m_Coeff[3];
         }
 
         public float CalculateNextInSlope(float dx, StreamedCurveKey rhs)
         {
             //Stepped
-            if (coeff[0] == 0f && coeff[1] == 0f && coeff[2] == 0f)
+            if (m_Coeff[0] == 0f && m_Coeff[1] == 0f && m_Coeff[2] == 0f)
             {
                 return float.PositiveInfinity;
             }
 
             dx = Math.Max(dx, 0.0001f);
-            var dy = rhs.value - value;
+            var dy = rhs.m_Value - m_Value;
             var length = 1.0f / (dx * dx);
-            var d1 = outSlope * dx;
-            var d2 = dy + dy + dy - d1 - d1 - coeff[1] / length;
+            var d1 = m_OutSlope * dx;
+            var d2 = dy + dy + dy - d1 - d1 - m_Coeff[1] / length;
             return d2 / dx;
         }
     }
 
     public class StreamedFrame
     {
-        public float time;
-        public StreamedCurveKey[] keyList;
-
-        public StreamedFrame() { }
+        public float m_Time;
+        public StreamedCurveKey[] m_KeyList;
 
         public StreamedFrame(BinaryReader reader)
         {
-            time = reader.ReadSingle();
+            m_Time = reader.ReadSingle();
 
             int numKeys = reader.ReadInt32();
-            keyList = new StreamedCurveKey[numKeys];
+            m_KeyList = new StreamedCurveKey[numKeys];
             for (int i = 0; i < numKeys; i++)
             {
-                keyList[i] = new StreamedCurveKey(reader);
+                m_KeyList[i] = new StreamedCurveKey(reader);
             }
         }
     }
 
     public List<StreamedFrame> ReadData()
     {
-        var frameList = new List<StreamedFrame>();
-        var buffer = new byte[data.Length * 4];
-        Buffer.BlockCopy(data, 0, buffer, 0, buffer.Length);
-        using (var reader = new BinaryReader(new MemoryStream(buffer)))
+        var m_FrameList = new List<StreamedFrame>();
+        var m_Buffer = new byte[m_Data.Length * 4];
+        Buffer.BlockCopy(m_Data, 0, m_Buffer, 0, m_Buffer.Length);
+        using (var reader = new BinaryReader(new MemoryStream(m_Buffer)))
         {
             while (reader.BaseStream.Position < reader.BaseStream.Length)
             {
-                frameList.Add(new StreamedFrame(reader));
+                m_FrameList.Add(new StreamedFrame(reader));
             }
         }
 
-        for (int frameIndex = 2; frameIndex < frameList.Count - 1; frameIndex++)
+        for (int frameIndex = 2; frameIndex < m_FrameList.Count - 1; frameIndex++)
         {
-            var frame = frameList[frameIndex];
-            foreach (var curveKey in frame.keyList)
+            var frame = m_FrameList[frameIndex];
+            foreach (var curveKey in frame.m_KeyList)
             {
                 for (int i = frameIndex - 1; i >= 0; i--)
                 {
-                    var preFrame = frameList[i];
-                    var preCurveKey = preFrame.keyList.FirstOrDefault(x => x.index == curveKey.index);
+                    var preFrame = m_FrameList[i];
+                    var preCurveKey = preFrame.m_KeyList.FirstOrDefault(x => x.m_Index == curveKey.m_Index);
                     if (preCurveKey != null)
                     {
-                        curveKey.inSlope = preCurveKey.CalculateNextInSlope(frame.time - preFrame.time, curveKey);
+                        curveKey.m_InSlope = preCurveKey.CalculateNextInSlope(frame.m_Time - preFrame.m_Time, curveKey);
                         break;
                     }
                 }
             }
         }
-        return frameList;
+        return m_FrameList;
     }
 }
 
@@ -614,8 +582,6 @@ public class DenseClip
     public float m_SampleRate;
     public float m_BeginTime;
     public float[] m_SampleArray;
-
-    public DenseClip() { }
 
     public DenseClip(ObjectReader reader)
     {
@@ -629,14 +595,10 @@ public class DenseClip
 
 public class ConstantClip
 {
-    public float[] data;
+    public float[] m_Data;
 
-    public ConstantClip() { }
-
-    public ConstantClip(ObjectReader reader)
-    {
-        data = reader.ReadSingleArray();
-    }
+    public ConstantClip(ObjectReader reader) 
+        => m_Data = reader.ReadSingleArray();
 }
 
 public class ValueConstant
@@ -645,8 +607,6 @@ public class ValueConstant
     public uint m_TypeID;
     public uint m_Type;
     public uint m_Index;
-
-    public ValueConstant() { }
 
     public ValueConstant(ObjectReader reader)
     {
@@ -664,8 +624,6 @@ public class ValueArrayConstant
 {
     public ValueConstant[] m_ValueArray;
 
-    public ValueArrayConstant() { }
-
     public ValueArrayConstant(ObjectReader reader)
     {
         int numVals = reader.ReadInt32();
@@ -679,14 +637,10 @@ public class ValueArrayConstant
 
 public class OffsetPtr
 {
-    public Clip data;
+    public Clip m_Data;
 
-    public OffsetPtr() { }
-
-    public OffsetPtr(ObjectReader reader)
-    {
-        data = new Clip(reader);
-    }
+    public OffsetPtr(ObjectReader reader) 
+        => m_Data = new Clip(reader);
 }
 
 public class Clip
@@ -695,8 +649,6 @@ public class Clip
     public DenseClip m_DenseClip;
     public ConstantClip m_ConstantClip;
     public ValueArrayConstant m_Binding;
-
-    public Clip() { }
 
     public Clip(ObjectReader reader)
     {
@@ -726,34 +678,34 @@ public class Clip
             genericBindings.Add(binding);
             if (curveTypeID == 4174552735) //CRC(PositionX))
             {
-                binding.path = curveID;
-                binding.attribute = 1; //kBindTransformPosition
-                binding.typeID = ClassIDType.Transform;
+                binding.m_Path = curveID;
+                binding.m_Attribute = 1; //kBindTransformPosition
+                binding.m_TypeID = ClassIDType.Transform;
                 i += 3;
             }
             else if (curveTypeID == 2211994246) //CRC(QuaternionX))
             {
-                binding.path = curveID;
-                binding.attribute = 2; //kBindTransformRotation
-                binding.typeID = ClassIDType.Transform;
+                binding.m_Path = curveID;
+                binding.m_Attribute = 2; //kBindTransformRotation
+                binding.m_TypeID = ClassIDType.Transform;
                 i += 4;
             }
             else if (curveTypeID == 1512518241) //CRC(ScaleX))
             {
-                binding.path = curveID;
-                binding.attribute = 3; //kBindTransformScale
-                binding.typeID = ClassIDType.Transform;
+                binding.m_Path = curveID;
+                binding.m_Attribute = 3; //kBindTransformScale
+                binding.m_TypeID = ClassIDType.Transform;
                 i += 3;
             }
             else
             {
-                binding.typeID = ClassIDType.Animator;
-                binding.path = 0;
-                binding.attribute = curveID;
+                binding.m_TypeID = ClassIDType.Animator;
+                binding.m_Path = 0;
+                binding.m_Attribute = curveID;
                 i++;
             }
         }
-        bindings.genericBindings = genericBindings.ToArray();
+        bindings.m_GenericBindings = genericBindings.ToArray();
         return bindings;
     }
 }
@@ -775,12 +727,12 @@ public class ValueDelta
 public class ClipMuscleConstant
 {
     public HumanPose m_DeltaPose;
-    public xform m_StartX;
-    public xform m_StopX;
-    public xform m_LeftFootStartX;
-    public xform m_RightFootStartX;
-    public xform m_MotionStartX;
-    public xform m_MotionStopX;
+    public xForm m_StartX;
+    public xForm m_StopX;
+    public xForm m_LeftFootStartX;
+    public xForm m_RightFootStartX;
+    public xForm m_MotionStartX;
+    public xForm m_MotionStopX;
     public Vector3 m_AverageSpeed;
     public OffsetPtr m_Clip;
     public float m_StartTime;
@@ -810,17 +762,17 @@ public class ClipMuscleConstant
     {
         var version = reader.version;
         m_DeltaPose = new HumanPose(reader);
-        m_StartX = new xform(reader);
+        m_StartX = new xForm(reader);
         if (version >= (5, 5)) //5.5 and up
         {
-            m_StopX = new xform(reader);
+            m_StopX = new xForm(reader);
         }
-        m_LeftFootStartX = new xform(reader);
-        m_RightFootStartX = new xform(reader);
+        m_LeftFootStartX = new xForm(reader);
+        m_RightFootStartX = new xForm(reader);
         if (version < 5)//5.0 down
         {
-            m_MotionStartX = new xform(reader);
-            m_MotionStopX = new xform(reader);
+            m_MotionStartX = new xForm(reader);
+            m_MotionStopX = new xForm(reader);
         }
         m_AverageSpeed = version >= (5, 4) ? reader.ReadVector3() : (Vector3)reader.ReadVector4();//5.4 and up
         m_Clip = new OffsetPtr(reader);
@@ -870,40 +822,40 @@ public class ClipMuscleConstant
 
 public class GenericBinding
 {
-    public uint path;
-    public uint attribute;
-    public PPtr<Object> script;
-    public ClassIDType typeID;
-    public byte customType;
-    public byte isPPtrCurve;
-    public byte isIntCurve;
-    public byte isSerializeReferenceCurve;
+    public uint m_Path;
+    public uint m_Attribute;
+    public PPtr<Object> m_Script;
+    public ClassIDType m_TypeID;
+    public byte m_CustomType;
+    public byte m_IsPPtrCurve;
+    public byte m_IsIntCurve;
+    public byte m_IsSerializeReferenceCurve;
 
     public GenericBinding() { }
 
     public GenericBinding(ObjectReader reader)
     {
         var version = reader.version;
-        path = reader.ReadUInt32();
-        attribute = reader.ReadUInt32();
-        script = new PPtr<Object>(reader);
+        m_Path = reader.ReadUInt32();
+        m_Attribute = reader.ReadUInt32();
+        m_Script = new PPtr<Object>(reader);
         if (version >= (5, 6)) //5.6 and up
         {
-            typeID = (ClassIDType)reader.ReadInt32();
+            m_TypeID = (ClassIDType)reader.ReadInt32();
         }
         else
         {
-            typeID = (ClassIDType)reader.ReadUInt16();
+            m_TypeID = (ClassIDType)reader.ReadUInt16();
         }
-        customType = reader.ReadByte();
-        isPPtrCurve = reader.ReadByte();
+        m_CustomType = reader.ReadByte();
+        m_IsPPtrCurve = reader.ReadByte();
         if (version >= (2022, 1)) //2022.1 and up
         {
-            isIntCurve = reader.ReadByte();
+            m_IsIntCurve = reader.ReadByte();
         }
         if (version >= (2022, 2)) //2022.2 and up
         {
-            isSerializeReferenceCurve = reader.ReadByte();
+            m_IsSerializeReferenceCurve = reader.ReadByte();
         }
         reader.AlignStream();
     }
@@ -911,36 +863,36 @@ public class GenericBinding
 
 public class AnimationClipBindingConstant
 {
-    public GenericBinding[] genericBindings;
-    public PPtr<Object>[] pptrCurveMapping;
+    public GenericBinding[] m_GenericBindings;
+    public PPtr<Object>[] m_PptrCurveMapping;
 
     public AnimationClipBindingConstant() { }
 
     public AnimationClipBindingConstant(ObjectReader reader)
     {
         int numBindings = reader.ReadInt32();
-        genericBindings = new GenericBinding[numBindings];
+        m_GenericBindings = new GenericBinding[numBindings];
         for (int i = 0; i < numBindings; i++)
         {
-            genericBindings[i] = new GenericBinding(reader);
+            m_GenericBindings[i] = new GenericBinding(reader);
         }
 
         int numMappings = reader.ReadInt32();
-        pptrCurveMapping = new PPtr<Object>[numMappings];
+        m_PptrCurveMapping = new PPtr<Object>[numMappings];
         for (int i = 0; i < numMappings; i++)
         {
-            pptrCurveMapping[i] = new PPtr<Object>(reader);
+            m_PptrCurveMapping[i] = new PPtr<Object>(reader);
         }
     }
 
     public GenericBinding FindBinding(int index)
     {
         int curves = 0;
-        foreach (var b in genericBindings)
+        foreach (var b in m_GenericBindings)
         {
-            if (b.typeID == ClassIDType.Transform)
+            if (b.m_TypeID == ClassIDType.Transform)
             {
-                switch (b.attribute)
+                switch (b.m_Attribute)
                 {
                     case 1: //kBindTransformPosition
                     case 3: //kBindTransformScale
@@ -971,32 +923,30 @@ public class AnimationClipBindingConstant
 
 public class AnimationEvent
 {
-    public float time;
-    public string functionName;
-    public string data;
-    public PPtr<Object> objectReferenceParameter;
-    public float floatParameter;
-    public int intParameter;
-    public int messageOptions;
-
-    public AnimationEvent() { }
+    public float m_Time;
+    public string m_FunctionName;
+    public string m_Data;
+    public PPtr<Object> m_ObjectReferenceParameter;
+    public float m_FloatParameter;
+    public int m_IntParameter;
+    public int m_MessageOptions;
 
     public AnimationEvent(ObjectReader reader)
     {
         var version = reader.version;
-        time = reader.ReadSingle();
-        functionName = reader.ReadAlignedString();
-        data = reader.ReadAlignedString();
+        m_Time = reader.ReadSingle();
+        m_FunctionName = reader.ReadAlignedString();
+        m_Data = reader.ReadAlignedString();
         if (version >= (2, 6)) //2.6 and up
         {
-            objectReferenceParameter = new PPtr<Object>(reader);
-            floatParameter = reader.ReadSingle();
+            m_ObjectReferenceParameter = new PPtr<Object>(reader);
+            m_FloatParameter = reader.ReadSingle();
             if (version >= 3) //3 and up
             {
-                intParameter = reader.ReadInt32();
+                m_IntParameter = reader.ReadInt32();
             }
         }
-        messageOptions = reader.ReadInt32();
+        m_MessageOptions = reader.ReadInt32();
     }
 }
 
@@ -1215,10 +1165,8 @@ public sealed class AnimationClip : NamedObject
     public class EqComparer : IEqualityComparer<AnimationClip>
     {
         public bool Equals(AnimationClip clipA, AnimationClip clipB)
-        {
-            return clipA?.m_PathID == clipB?.m_PathID 
-                   && clipA?.byteSize == clipB?.byteSize;
-        }
+            => clipA?.m_PathID == clipB?.m_PathID && 
+               clipA?.byteSize == clipB?.byteSize;
 
         public int GetHashCode(AnimationClip obj)
         {

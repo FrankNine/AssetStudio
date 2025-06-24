@@ -7,9 +7,7 @@ public class SerializedTypeHelper
     private readonly UnityVersion version;
 
     public SerializedTypeHelper(UnityVersion version)
-    {
-        this.version = version;
-    }
+        => this.version = version;
 
     public void AddMonoBehaviour(List<TypeTreeNode> nodes, int indent)
     {

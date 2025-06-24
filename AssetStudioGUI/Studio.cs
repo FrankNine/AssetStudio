@@ -242,14 +242,14 @@ internal static class Studio
                         }
                         break;
                     case Texture2D m_Texture2D:
-                        if (!string.IsNullOrEmpty(m_Texture2D.m_StreamData?.path))
-                            assetItem.FullSize = asset.byteSize + m_Texture2D.m_StreamData.size;
+                        if (!string.IsNullOrEmpty(m_Texture2D.m_StreamData?.m_Path))
+                            assetItem.FullSize = asset.byteSize + m_Texture2D.m_StreamData.m_Size;
                         assetItem.Text = m_Texture2D.m_Name;
                         exportable = true;
                         break;
                     case Texture2DArray m_Texture2DArray:
-                        if (!string.IsNullOrEmpty(m_Texture2DArray.m_StreamData?.path))
-                            assetItem.FullSize = asset.byteSize + m_Texture2DArray.m_StreamData.size;
+                        if (!string.IsNullOrEmpty(m_Texture2DArray.m_StreamData?.m_Path))
+                            assetItem.FullSize = asset.byteSize + m_Texture2DArray.m_StreamData.m_Size;
                         assetItem.Text = m_Texture2DArray.m_Name;
                         tex2dArrayAssetList.Add(assetItem);
                         exportable = true;
@@ -317,7 +317,7 @@ internal static class Studio
                         exportable = true;
                         break;
                     case PlayerSettings m_PlayerSettings:
-                        productName = m_PlayerSettings.productName;
+                        productName = m_PlayerSettings.m_ProductName;
                         break;
                     case AssetBundle m_AssetBundle:
                         var isStreamedSceneAssetBundle = m_AssetBundle.m_IsStreamedSceneAssetBundle;
@@ -330,10 +330,10 @@ internal static class Studio
                             : m_AssetBundle.m_AssetBundleName;
                         foreach (var m_Container in m_AssetBundle.m_Container)
                         {
-                            var preloadIndex = m_Container.Value.preloadIndex;
+                            var preloadIndex = m_Container.Value.m_PreloadIndex;
                             var preloadSize = isStreamedSceneAssetBundle
                                 ? preloadTable.Length
-                                : m_Container.Value.preloadSize;
+                                : m_Container.Value.m_PreloadSize;
                             var preloadEnd = preloadIndex + preloadSize;
                             for (var k = preloadIndex; k < preloadEnd; k++)
                             {

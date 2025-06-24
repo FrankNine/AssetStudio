@@ -17,8 +17,6 @@ public class ResourceReader
     }
     public long Offset { get; set; }
 
-    public ResourceReader() { }
-
     public ResourceReader(string path, SerializedFile assetsFile, long offset, long size)
     {
         needSearch = true;

@@ -4,15 +4,15 @@ using System.Collections.Generic;
 
 public class AssetInfo
 {
-    public int preloadIndex;
-    public int preloadSize;
-    public PPtr<Object> asset;
+    public int m_PreloadIndex;
+    public int m_PreloadSize;
+    public PPtr<Object> m_Asset;
 
     public AssetInfo(ObjectReader reader)
     {
-        preloadIndex = reader.ReadInt32();
-        preloadSize = reader.ReadInt32();
-        asset = new PPtr<Object>(reader);
+        m_PreloadIndex = reader.ReadInt32();
+        m_PreloadSize = reader.ReadInt32();
+        m_Asset = new PPtr<Object>(reader);
     }
 }
 

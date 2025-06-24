@@ -421,7 +421,7 @@ partial class AssetStudioGUIForm : Form
                             break;
                     }
                 }
-                else if (lastSelectedItem?.Type == ClassIDType.Sprite && !((Sprite)lastSelectedItem.Asset).m_RD.alphaTexture.IsNull)
+                else if (lastSelectedItem?.Type == ClassIDType.Sprite && !((Sprite)lastSelectedItem.Asset).m_RD.m_AlphaTexture.IsNull)
                 {
                     switch (e.KeyCode)
                     {
@@ -1017,7 +1017,7 @@ partial class AssetStudioGUIForm : Form
                 }
             }
             var switchSwizzled = m_Texture2D.m_PlatformBlob.Length != 0;
-            assetItem.InfoText += assetItem.Asset.platform == BuildTarget.Switch ? $"\nUses texture swizzling: {switchSwizzled}" : "";
+            assetItem.InfoText += assetItem.Asset.m_Platform == BuildTarget.Switch ? $"\nUses texture swizzling: {switchSwizzled}" : "";
             PreviewTexture(bitmap);
 
             StatusStripUpdate("'Ctrl'+'R'/'G'/'B'/'A' for Channel Toggle");
@@ -1474,7 +1474,7 @@ partial class AssetStudioGUIForm : Form
             assetItem.InfoText = $"Width: {bitmap.Width}\nHeight: {bitmap.Height}\n";
             PreviewTexture(bitmap);
 
-            if (!m_Sprite.m_RD.alphaTexture.IsNull)
+            if (!m_Sprite.m_RD.m_AlphaTexture.IsNull)
             {
                 assetItem.InfoText += $"Alpha Mask: {spriteMaskVisibleMode}\n";
                 StatusStripUpdate("'Ctrl'+'A' - Enable/Disable alpha mask usage. 'Ctrl'+'M' - Show alpha mask only.");
