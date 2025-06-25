@@ -1,7 +1,4 @@
-﻿using AssetStudio;
-using Newtonsoft.Json;
-using OpenTK.Graphics.OpenGL;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -16,12 +13,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
-using static AssetStudioGUI.Studio;
-using Font = AssetStudio.Font;
 using Microsoft.WindowsAPICodePack.Taskbar;
+
+using Newtonsoft.Json;
+using OpenTK.Graphics.OpenGL;
 using Vector3 = OpenTK.Mathematics.Vector3;
 using Vector4 = OpenTK.Mathematics.Vector4;
 using Matrix4 = OpenTK.Mathematics.Matrix4;
+
+using AssetStudio;
+using static AssetStudioGUI.Studio;
+using Font = AssetStudio.Font;
 
 namespace AssetStudioGUI;
 
@@ -50,8 +52,8 @@ partial class AssetStudioGUIForm : Form
     #endregion
 
     #region TexControl
-    private static char[] textureChannelNames = new[] { 'B', 'G', 'R', 'A' };
-    private bool[] textureChannels = new[] { true, true, true, true };
+    private static char[] textureChannelNames = ['B', 'G', 'R', 'A'];
+    private bool[] textureChannels = [true, true, true, true];
     #endregion
 
     #region GLControl
@@ -83,15 +85,11 @@ partial class AssetStudioGUIForm : Form
     private int sortColumn = -1;
     private bool reverseSort;
 
-#if NET6_0_OR_GREATER
-    private AlphanumComparatorFastNet alphanumComparator = new AlphanumComparatorFastNet();
-#else
-        private AlphanumComparatorFast alphanumComparator = new AlphanumComparatorFast();
-#endif
+    private AlphanumComparatorFastNet alphanumComparator = new();
 
     //asset list selection
-    private List<int> selectedIndicesPrevList = new List<int>();
-    private List<AssetItem> selectedAnimationAssetsList = new List<AssetItem>();
+    private List<int> selectedIndicesPrevList = [];
+    private List<AssetItem> selectedAnimationAssetsList = [];
 
     //asset list filter
     private System.Timers.Timer delayTimer;
@@ -99,12 +97,12 @@ partial class AssetStudioGUIForm : Form
 
     //tree search
     private int nextGObject;
-    private List<TreeNode> treeSrcResults = new List<TreeNode>();
+    private List<TreeNode> treeSrcResults = [];
 
     //tree selection
-    private List<TreeNode> treeNodeSelectedList = new List<TreeNode>();
+    private List<TreeNode> treeNodeSelectedList = [];
     private bool treeRecursionEnabled = true;
-    private bool isRecursionEvent = false;
+    private bool isRecursionEvent;
 
     private string openDirectoryBackup = string.Empty;
     private string saveDirectoryBackup = string.Empty;
@@ -190,24 +188,21 @@ partial class AssetStudioGUIForm : Form
     private async void loadFile_Click(object sender, EventArgs e)
     {
         openFileDialog1.InitialDirectory = openDirectoryBackup;
-        if (openFileDialog1.ShowDialog(this) == DialogResult.OK)
-        {
-            ResetForm();
-            await Task.Run(() => assetsManager.LoadFilesAndFolders(out openDirectoryBackup, openFileDialog1.FileNames));
-            BuildAssetStructures();
-        }
+        if (openFileDialog1.ShowDialog(this) != DialogResult.OK) return;
+        
+        ResetForm();
+        await Task.Run(() => assetsManager.LoadFilesAndFolders(out openDirectoryBackup, openFileDialog1.FileNames));
+        BuildAssetStructures();
     }
 
     private async void loadFolder_Click(object sender, EventArgs e)
     {
-        var openFolderDialog = new OpenFolderDialog();
-        openFolderDialog.InitialFolder = openDirectoryBackup;
-        if (openFolderDialog.ShowDialog(this) == DialogResult.OK)
-        {
-            ResetForm();
-            await Task.Run(() => assetsManager.LoadFilesAndFolders(out openDirectoryBackup, openFolderDialog.Folder));
-            BuildAssetStructures();
-        }
+        var openFolderDialog = new OpenFolderDialog { InitialFolder = openDirectoryBackup };
+        if (openFolderDialog.ShowDialog(this) != DialogResult.OK) return;
+        
+        ResetForm();
+        await Task.Run(() => assetsManager.LoadFilesAndFolders(out openDirectoryBackup, openFolderDialog.Folder));
+        BuildAssetStructures();
     }
 
     private void specifyUnityVersion_Close(object sender, EventArgs e)
@@ -230,35 +225,29 @@ partial class AssetStudioGUIForm : Form
 
     private async void extractFileToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        if (openFileDialog1.ShowDialog(this) == DialogResult.OK)
-        {
-            var saveFolderDialog = new OpenFolderDialog();
-            saveFolderDialog.Title = "Select the save folder";
-            if (saveFolderDialog.ShowDialog(this) == DialogResult.OK)
-            {
-                var fileNames = openFileDialog1.FileNames;
-                var savePath = saveFolderDialog.Folder;
-                var extractedCount = await Task.Run(() => ExtractFile(fileNames, savePath));
-                Logger.Info($"Finished extracting {extractedCount} files.");
-            }
-        }
+        if (openFileDialog1.ShowDialog(this) != DialogResult.OK) return;
+        
+        var saveFolderDialog = new OpenFolderDialog { Title = "Select the save folder" };
+        if (saveFolderDialog.ShowDialog(this) != DialogResult.OK) return;
+        
+        var fileNames = openFileDialog1.FileNames;
+        var savePath = saveFolderDialog.Folder;
+        var extractedCount = await Task.Run(() => ExtractFile(fileNames, savePath));
+        Logger.Info($"Finished extracting {extractedCount} files.");
     }
 
     private async void extractFolderToolStripMenuItem_Click(object sender, EventArgs e)
     {
         var openFolderDialog = new OpenFolderDialog();
-        if (openFolderDialog.ShowDialog(this) == DialogResult.OK)
-        {
-            var saveFolderDialog = new OpenFolderDialog();
-            saveFolderDialog.Title = "Select the save folder";
-            if (saveFolderDialog.ShowDialog(this) == DialogResult.OK)
-            {
-                var path = openFolderDialog.Folder;
-                var savePath = saveFolderDialog.Folder;
-                var extractedCount = await Task.Run(() => ExtractFolder(path, savePath));
-                Logger.Info($"Finished extracting {extractedCount} files.");
-            }
-        }
+        if (openFolderDialog.ShowDialog(this) != DialogResult.OK) return;
+        
+        var saveFolderDialog = new OpenFolderDialog { Title = "Select the save folder" };
+        if (saveFolderDialog.ShowDialog(this) != DialogResult.OK) return;
+        
+        var path = openFolderDialog.Folder;
+        var savePath = saveFolderDialog.Folder;
+        var extractedCount = await Task.Run(() => ExtractFolder(path, savePath));
+        Logger.Info($"Finished extracting {extractedCount} files.");
     }
 
     private async void BuildAssetStructures()
@@ -307,6 +296,7 @@ partial class AssetStudioGUIForm : Form
         {
             types.Add("MonoBehaviour (Live2D Model)");
         }
+        
         foreach (var typeString in types)
         {
             var typeItem = new ToolStripMenuItem
@@ -319,18 +309,9 @@ partial class AssetStudioGUIForm : Form
             typeItem.Click += typeToolStripMenuItem_Click;
             filterTypeToolStripMenuItem.DropDownItems.Add(typeItem);
         }
+        
         allToolStripMenuItem.Checked = true;
-        var log = $"Finished loading {assetsManager.assetsFileList.Count} file(s) with {assetListView.Items.Count} exportable assets";
-        var unityVer = assetsManager.assetsFileList[0].version;
-        var m_ObjectsCount = unityVer > 2020 ?
-            assetsManager.assetsFileList.Sum(x => x.m_Objects.LongCount(y => y.classID != (int)ClassIDType.Shader)) :
-            assetsManager.assetsFileList.Sum(x => x.m_Objects.Count);
-        var objectsCount = assetsManager.assetsFileList.Sum(x => x.Objects.Count);
-        if (m_ObjectsCount != objectsCount)
-        {
-            log += $" and {m_ObjectsCount - objectsCount} assets failed to read";
-        }
-        Logger.Info(log);
+        Logger.Info($"Finished loading {assetsManager.assetsFileList.Count} file(s) with {assetListView.Items.Count} exportable assets");
     }
 
     private void typeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1763,14 +1744,10 @@ partial class AssetStudioGUIForm : Form
     }
 
     private void exportSelectedObjectsMergeToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-        ExportMergeObjects(false);
-    }
+        => ExportMergeObjects(false);
 
     private void exportSelectedObjectsMergeWithAnimationClipToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-        ExportMergeObjects(true);
-    }
+        => ExportMergeObjects(true);
 
     private void ExportMergeObjects(bool animation)
     {
@@ -1785,21 +1762,21 @@ partial class AssetStudioGUIForm : Form
                 saveFileDialog.AddExtension = false;
                 saveFileDialog.Filter = "Fbx file (*.fbx)|*.fbx";
                 saveFileDialog.InitialDirectory = saveDirectoryBackup;
-                if (saveFileDialog.ShowDialog(this) == DialogResult.OK)
+
+                if (saveFileDialog.ShowDialog(this) != DialogResult.OK) return;
+                
+                saveDirectoryBackup = Path.GetDirectoryName(saveFileDialog.FileName);
+                var exportPath = saveFileDialog.FileName;
+                List<AssetItem> animationList = null;
+                if (animation)
                 {
-                    saveDirectoryBackup = Path.GetDirectoryName(saveFileDialog.FileName);
-                    var exportPath = saveFileDialog.FileName;
-                    List<AssetItem> animationList = null;
-                    if (animation)
+                    animationList = GetSelectedAssets().Where(x => x.Type == ClassIDType.AnimationClip).ToList();
+                    if (animationList.Count == 0)
                     {
-                        animationList = GetSelectedAssets().Where(x => x.Type == ClassIDType.AnimationClip).ToList();
-                        if (animationList.Count == 0)
-                        {
-                            animationList = null;
-                        }
+                        animationList = null;
                     }
-                    ExportObjectsMergeWithAnimationClip(exportPath, gameObjects, animationList);
                 }
+                ExportObjectsMergeWithAnimationClip(exportPath, gameObjects, animationList);
             }
             else
             {
@@ -1819,77 +1796,51 @@ partial class AssetStudioGUIForm : Form
     }
 
     private void exportAllAssetsMenuItem_Click(object sender, EventArgs e)
-    {
-        ExportAssets(ExportFilter.All, ExportType.Convert);
-    }
+        => ExportAssets(ExportFilter.All, ExportType.Convert);
 
     private void exportSelectedAssetsMenuItem_Click(object sender, EventArgs e)
-    {
-        ExportAssets(ExportFilter.Selected, ExportType.Convert);
-    }
+        => ExportAssets(ExportFilter.Selected, ExportType.Convert);
 
     private void exportFilteredAssetsMenuItem_Click(object sender, EventArgs e)
-    {
-        ExportAssets(ExportFilter.Filtered, ExportType.Convert);
-    }
+        => ExportAssets(ExportFilter.Filtered, ExportType.Convert);
 
     private void toolStripMenuItem4_Click(object sender, EventArgs e)
-    {
-        ExportAssets(ExportFilter.All, ExportType.Raw);
-    }
+        => ExportAssets(ExportFilter.All, ExportType.Raw);
 
     private void toolStripMenuItem5_Click(object sender, EventArgs e)
-    {
-        ExportAssets(ExportFilter.Selected, ExportType.Raw);
-    }
+        => ExportAssets(ExportFilter.Selected, ExportType.Raw);
 
     private void toolStripMenuItem6_Click(object sender, EventArgs e)
-    {
-        ExportAssets(ExportFilter.Filtered, ExportType.Raw);
-    }
+        => ExportAssets(ExportFilter.Filtered, ExportType.Raw);
 
     private void toolStripMenuItem7_Click(object sender, EventArgs e)
-    {
-        ExportAssets(ExportFilter.All, ExportType.Dump);
-    }
+        => ExportAssets(ExportFilter.All, ExportType.Dump);
 
     private void toolStripMenuItem8_Click(object sender, EventArgs e)
-    {
-        ExportAssets(ExportFilter.Selected, ExportType.Dump);
-    }
+        => ExportAssets(ExportFilter.Selected, ExportType.Dump);
 
     private void toolStripMenuItem9_Click(object sender, EventArgs e)
-    {
-        ExportAssets(ExportFilter.Filtered, ExportType.Dump);
-    }
+        => ExportAssets(ExportFilter.Filtered, ExportType.Dump);
 
     private void toolStripMenuItem11_Click(object sender, EventArgs e)
-    {
-        ExportAssetsList(ExportFilter.All);
-    }
+        => ExportAssetsList(ExportFilter.All);
 
     private void toolStripMenuItem12_Click(object sender, EventArgs e)
-    {
-        ExportAssetsList(ExportFilter.Selected);
-    }
+        => ExportAssetsList(ExportFilter.Selected);
 
     private void toolStripMenuItem13_Click(object sender, EventArgs e)
-    {
-        ExportAssetsList(ExportFilter.Filtered);
-    }
+        => ExportAssetsList(ExportFilter.Filtered);
 
     private void exportAllObjectsSplitToolStripMenuItem1_Click(object sender, EventArgs e)
     {
         if (sceneTreeView.Nodes.Count > 0)
         {
-            var saveFolderDialog = new OpenFolderDialog();
-            saveFolderDialog.InitialFolder = saveDirectoryBackup;
-            if (saveFolderDialog.ShowDialog(this) == DialogResult.OK)
-            {
-                saveDirectoryBackup = saveFolderDialog.Folder;
-                var savePath = saveFolderDialog.Folder + Path.DirectorySeparatorChar;
-                ExportSplitObjects(savePath, sceneTreeView.Nodes);
-            }
+            var saveFolderDialog = new OpenFolderDialog { InitialFolder = saveDirectoryBackup };
+            if (saveFolderDialog.ShowDialog(this) != DialogResult.OK) return;
+            
+            saveDirectoryBackup = saveFolderDialog.Folder;
+            var savePath = saveFolderDialog.Folder + Path.DirectorySeparatorChar;
+            ExportSplitObjects(savePath, sceneTreeView.Nodes);
         }
         else
         {
@@ -1898,14 +1849,10 @@ partial class AssetStudioGUIForm : Form
     }
 
     private void assetListView_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        ProcessSelectedItems();
-    }
+        => ProcessSelectedItems();
 
     private void assetListView_VirtualItemsSelectionRangeChanged(object sender, ListViewVirtualItemsSelectionRangeChangedEventArgs e)
-    {
-        ProcessSelectedItems();
-    }
+        => ProcessSelectedItems();
 
     private void ProcessSelectedItems()
     {
@@ -2086,27 +2033,25 @@ partial class AssetStudioGUIForm : Form
 
         if (exportableAssets.Count > 0)
         {
-            var saveFolderDialog = new OpenFolderDialog();
-            saveFolderDialog.InitialFolder = saveDirectoryBackup;
-            if (saveFolderDialog.ShowDialog(this) == DialogResult.OK)
+            var saveFolderDialog = new OpenFolderDialog { InitialFolder = saveDirectoryBackup };
+            if (saveFolderDialog.ShowDialog(this) != DialogResult.OK) return;
+            
+            timer.Stop();
+            saveDirectoryBackup = saveFolderDialog.Folder;
+            List<AssetItem> toExportAssets = null;
+            switch (type)
             {
-                timer.Stop();
-                saveDirectoryBackup = saveFolderDialog.Folder;
-                List<AssetItem> toExportAssets = null;
-                switch (type)
-                {
-                    case ExportFilter.All:
-                        toExportAssets = exportableAssets;
-                        break;
-                    case ExportFilter.Selected:
-                        toExportAssets = GetSelectedAssets();
-                        break;
-                    case ExportFilter.Filtered:
-                        toExportAssets = visibleAssets;
-                        break;
-                }
-                Studio.ExportAssetsList(saveFolderDialog.Folder, toExportAssets, ExportListType.XML);
+                case ExportFilter.All:
+                    toExportAssets = exportableAssets;
+                    break;
+                case ExportFilter.Selected:
+                    toExportAssets = GetSelectedAssets();
+                    break;
+                case ExportFilter.Filtered:
+                    toExportAssets = visibleAssets;
+                    break;
             }
+            Studio.ExportAssetsList(saveFolderDialog.Folder, toExportAssets, ExportListType.XML);
         }
         else
         {
@@ -2115,9 +2060,7 @@ partial class AssetStudioGUIForm : Form
     }
 
     private void toolStripMenuItem15_Click(object sender, EventArgs e)
-    {
-        GUILogger.ShowDebugMessage = toolStripMenuItem15.Checked;
-    }
+        => GUILogger.ShowDebugMessage = toolStripMenuItem15.Checked;
 
     private void sceneTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
     {
@@ -2317,24 +2260,16 @@ partial class AssetStudioGUIForm : Form
     }
 
     private void exportSelectedL2D_Click(object sender, EventArgs e)
-    {
-        ExportSelectedL2DModels(ExportL2DFilter.Selected);
-    }
+        => ExportSelectedL2DModels(ExportL2DFilter.Selected);
 
     private void exportSelectedL2DWithClips_Click(object sender, EventArgs e)
-    {
-        ExportSelectedL2DModels(ExportL2DFilter.SelectedWithClips);
-    }
+        => ExportSelectedL2DModels(ExportL2DFilter.SelectedWithClips);
 
     private void exportSelectedL2DWithFadeMotions_Click(object sender, EventArgs e)
-    {
-        ExportSelectedL2DModels(ExportL2DFilter.SelectedWithFade);
-    }
+        => ExportSelectedL2DModels(ExportL2DFilter.SelectedWithFade);
 
     private void exportSelectedL2DWithFadeList_Click(object sender, EventArgs e)
-    {
-        ExportSelectedL2DModels(ExportL2DFilter.SelectedWithFadeList);
-    }
+        => ExportSelectedL2DModels(ExportL2DFilter.SelectedWithFadeList);
 
     private void ExportSelectedL2DModels(ExportL2DFilter l2dExportMode)
     {
@@ -2418,63 +2353,43 @@ partial class AssetStudioGUIForm : Form
 
     private void Live2DExporter(List<MonoBehaviour> selMocs = null, List<AnimationClip> selClipMotions = null, List<MonoBehaviour> selFadeMotions = null, MonoBehaviour selFadeLst = null)
     {
-        var saveFolderDialog = new OpenFolderDialog();
-        saveFolderDialog.InitialFolder = saveDirectoryBackup;
-        if (saveFolderDialog.ShowDialog(this) == DialogResult.OK)
-        {
-            timer.Stop();
-            saveDirectoryBackup = saveFolderDialog.Folder;
-            Progress.Reset();
-            BeginInvoke(new Action(() => { progressBar1.Style = ProgressBarStyle.Marquee; }));
+        var saveFolderDialog = new OpenFolderDialog { InitialFolder = saveDirectoryBackup };
+        if (saveFolderDialog.ShowDialog(this) != DialogResult.OK) return;
+        
+        timer.Stop();
+        saveDirectoryBackup = saveFolderDialog.Folder;
+        Progress.Reset();
+        BeginInvoke(() => { progressBar1.Style = ProgressBarStyle.Marquee; });
 
-            Studio.ExportLive2D(saveFolderDialog.Folder, selMocs, selClipMotions, selFadeMotions, selFadeLst);
-        }
+        ExportLive2D(saveFolderDialog.Folder, selMocs, selClipMotions, selFadeMotions, selFadeLst);
     }
 
     private void customBlockCompressionComboBoxToolStripMenuItem_SelectedIndexChanged(object sender, EventArgs e)
     {
         var selectedTypeIndex = customBlockCompressionComboBoxToolStripMenuItem.SelectedIndex;
-        switch (selectedTypeIndex)
+        assetsManager.CustomBlockCompression = selectedTypeIndex switch
         {
-            case 0:
-                assetsManager.CustomBlockCompression = CompressionType.Auto;
-                break;
-            case 1:
-                assetsManager.CustomBlockCompression = CompressionType.Zstd;
-                break;
-            case 2:
-                assetsManager.CustomBlockCompression = CompressionType.Oodle;
-                break;
-            case 3:
-                assetsManager.CustomBlockCompression = CompressionType.Lz4HC;
-                break;
-            case 4:
-                assetsManager.CustomBlockCompression = CompressionType.Lzma;
-                break;
-        }
+            0 => CompressionType.Auto,
+            1 => CompressionType.Zstd,
+            2 => CompressionType.Oodle,
+            3 => CompressionType.Lz4HC,
+            4 => CompressionType.Lzma,
+            _ => assetsManager.CustomBlockCompression
+        };
     }
 
     private void customBlockInfoCompressionComboBoxToolStripMenuItem_SelectedIndexChanged(object sender, EventArgs e)
     {
         var selectedTypeIndex = customBlockInfoCompressionComboBoxToolStripMenuItem.SelectedIndex;
-        switch (selectedTypeIndex)
+        assetsManager.CustomBlockInfoCompression = selectedTypeIndex switch
         {
-            case 0:
-                assetsManager.CustomBlockInfoCompression = CompressionType.Auto;
-                break;
-            case 1:
-                assetsManager.CustomBlockInfoCompression = CompressionType.Zstd;
-                break;
-            case 2:
-                assetsManager.CustomBlockInfoCompression = CompressionType.Oodle;
-                break;
-            case 3:
-                assetsManager.CustomBlockInfoCompression = CompressionType.Lz4HC;
-                break;
-            case 4:
-                assetsManager.CustomBlockInfoCompression = CompressionType.Lzma;
-                break;
-        }
+            0 => CompressionType.Auto,
+            1 => CompressionType.Zstd,
+            2 => CompressionType.Oodle,
+            3 => CompressionType.Lz4HC,
+            4 => CompressionType.Lzma,
+            _ => assetsManager.CustomBlockInfoCompression
+        };
     }
 
     private void useAssetLoadingViaTypetreeToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
@@ -2491,7 +2406,6 @@ partial class AssetStudioGUIForm : Form
         if (SystemInformation.HighContrast)
             return;
 
-#if NET9_0_OR_GREATER
 #pragma warning disable WFO5001 //for evaluation purposes only
         var currentTheme = Properties.Settings.Default.guiColorTheme;
         colorThemeToolStripMenu.Visible = true;
@@ -2519,7 +2433,6 @@ partial class AssetStudioGUIForm : Form
             //skip
         }
 #pragma warning restore WFO5001
-#endif
         if (isDarkMode)
         {
             assetListView.GridLines = false;
@@ -2590,9 +2503,7 @@ partial class AssetStudioGUIForm : Form
     }
 
     private void copyToolStripMenuItem1_Click(object sender, EventArgs e)
-    {
-        Clipboard.SetDataObject(tempClipboard);
-    }
+        => Clipboard.SetDataObject(tempClipboard);
 
     private void expandAllToolStripMenuItem1_Click(object sender, EventArgs e)
     {

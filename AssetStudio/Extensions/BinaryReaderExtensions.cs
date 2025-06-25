@@ -23,7 +23,7 @@ public static class BinaryReaderExtensions
     public static string ReadAlignedString(this BinaryReader reader)
     {
         var length = reader.ReadInt32();
-        if (length > 0 && length <= reader.BaseStream.Length - reader.BaseStream.Position)
+        if (0 < length && length <= reader.BaseStream.Length - reader.BaseStream.Position)
         {
             var stringData = reader.ReadBytes(length);
             var result = Encoding.UTF8.GetString(stringData);
@@ -133,12 +133,12 @@ public static class BinaryReaderExtensions
     public static Matrix4x4[] ReadMatrixArray(this BinaryReader reader)
         => ReadArray(reader.ReadMatrix, reader.ReadInt32());
 
-    private static T[] ReadArray<T>(Func<T> del, int length)
+    public static T[] ReadArray<T>(Func<T> readFunc, int length)
     {
         var array = new T[length];
         for (int i = 0; i < length; i++)
         {
-            array[i] = del();
+            array[i] = readFunc();
         }
         return array;
     }

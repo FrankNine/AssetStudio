@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+
 using static AssetStudio.ImportHelper;
 
 public class AssetsManager
@@ -16,17 +17,17 @@ public class AssetsManager
     public bool LoadingViaTypeTreeEnabled = true;
     public CompressionType CustomBlockCompression = CompressionType.Auto;
     public CompressionType CustomBlockInfoCompression = CompressionType.Auto;
-    public List<SerializedFile> assetsFileList = new List<SerializedFile>();
+    public List<SerializedFile> assetsFileList = [];
 
-    internal Dictionary<string, int> assetsFileIndexCache = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-    internal ConcurrentDictionary<string, BinaryReader> resourceFileReaders = new ConcurrentDictionary<string, BinaryReader>(StringComparer.OrdinalIgnoreCase);
+    internal Dictionary<string, int> assetsFileIndexCache = new(StringComparer.OrdinalIgnoreCase);
+    internal ConcurrentDictionary<string, BinaryReader> resourceFileReaders = new(StringComparer.OrdinalIgnoreCase);
 
     private UnityVersion specifiedUnityVersion;
-    private List<string> importFiles = new List<string>();
-    private HashSet<ClassIDType> filteredAssetTypesList = new HashSet<ClassIDType>();
-    private HashSet<string> importFilesHash = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-    private HashSet<string> noexistFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-    private HashSet<string> assetsFileListHash = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    private List<string> importFiles = [];
+    private HashSet<ClassIDType> filteredAssetTypesList = [];
+    private HashSet<string> importFilesHash = new(StringComparer.OrdinalIgnoreCase);
+    private HashSet<string> noexistFiles = new(StringComparer.OrdinalIgnoreCase);
+    private HashSet<string> assetsFileListHash = new(StringComparer.OrdinalIgnoreCase);
 
     public UnityVersion SpecifyUnityVersion
     {
@@ -37,6 +38,7 @@ public class AssetsManager
             {
                 return;
             }
+            
             if (value == null)
             {
                 specifiedUnityVersion = null;
@@ -58,13 +60,13 @@ public class AssetsManager
 
     public void SetAssetFilter(params ClassIDType[] classIDTypes)
     {
-        filteredAssetTypesList.UnionWith(new[]
-        {
+        filteredAssetTypesList.UnionWith
+        ([
             ClassIDType.AssetBundle,
             ClassIDType.ResourceManager,
             ClassIDType.GameObject,
-            ClassIDType.Transform,
-        });
+            ClassIDType.Transform
+        ]);
 
         if (classIDTypes.Contains(ClassIDType.MonoBehaviour))
         {
@@ -85,14 +87,10 @@ public class AssetsManager
     }
 
     public void SetAssetFilter(List<ClassIDType> classIDTypeList)
-    {
-        SetAssetFilter(classIDTypeList.ToArray());
-    }
+        => SetAssetFilter(classIDTypeList.ToArray());
 
     public void LoadFilesAndFolders(params string[] path)
-    {
-        LoadFilesAndFolders(out _, path);
-    }
+        => LoadFilesAndFolders(out _, path);
 
     public void LoadFilesAndFolders(out string parentPath, params string[] path)
     {
@@ -547,7 +545,12 @@ public class AssetsManager
 
         var jsonOptions = new JsonSerializerOptions
         {
-            Converters = { new JsonConverterHelper.ByteArrayConverter(), new JsonConverterHelper.PPtrConverter(), new JsonConverterHelper.KVPConverter() },
+            Converters =
+            {
+                new JsonConverterHelper.ByteArrayConverter(),
+                new JsonConverterHelper.PPtrConverter(),
+                new JsonConverterHelper.KVPConverter()
+            },
             NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
             PropertyNameCaseInsensitive = true,
             IncludeFields = true,
@@ -568,128 +571,85 @@ public class AssetsManager
                 }
                 try
                 {
-                    Object obj = null;
-                    switch (objectReader.type)
+                    Object obj = objectReader.type switch
                     {
-                        case ClassIDType.Animation:
-                            obj = new Animation(objectReader);
-                            break;
-                        case ClassIDType.AnimationClip:
-                            obj = objectReader.serializedType?.m_Type != null && LoadingViaTypeTreeEnabled
-                                ? new AnimationClip(objectReader, TypeTreeHelper.ReadTypeByteArray(objectReader.serializedType.m_Type, objectReader), jsonOptions, objectInfo)
-                                : new AnimationClip(objectReader);
-                            break;
-                        case ClassIDType.Animator:
-                            obj = new Animator(objectReader);
-                            break;
-                        case ClassIDType.AnimatorController:
-                            obj = new AnimatorController(objectReader);
-                            break;
-                        case ClassIDType.AnimatorOverrideController:
-                            obj = new AnimatorOverrideController(objectReader);
-                            break;
-                        case ClassIDType.AssetBundle:
-                            obj = new AssetBundle(objectReader);
-                            break;
-                        case ClassIDType.AudioClip:
-                            obj = new AudioClip(objectReader);
-                            break;
-                        case ClassIDType.Avatar:
-                            obj = new Avatar(objectReader);
-                            break;
-                        case ClassIDType.BuildSettings:
-                            obj = new BuildSettings(objectReader);
-                            break;
-                        case ClassIDType.Font:
-                            obj = new Font(objectReader);
-                            break;
-                        case ClassIDType.GameObject:
-                            obj = new GameObject(objectReader);
-                            break;
-                        case ClassIDType.Material:
-                            obj = objectReader.serializedType?.m_Type != null && LoadingViaTypeTreeEnabled
-                                ? new Material(objectReader, TypeTreeHelper.ReadTypeByteArray(objectReader.serializedType.m_Type, objectReader), jsonOptions)
-                                : new Material(objectReader);
-                            break;
-                        case ClassIDType.Mesh:
-                            obj = new Mesh(objectReader);
-                            break;
-                        case ClassIDType.MeshFilter:
-                            obj = new MeshFilter(objectReader);
-                            break;
-                        case ClassIDType.MeshRenderer:
-                            obj = new MeshRenderer(objectReader);
-                            break;
-                        case ClassIDType.MonoBehaviour:
-                            obj = new MonoBehaviour(objectReader);
-                            break;
-                        case ClassIDType.MonoScript:
-                            obj = new MonoScript(objectReader);
-                            break;
-                        case ClassIDType.MovieTexture:
-                            obj = new MovieTexture(objectReader);
-                            break;
-                        case ClassIDType.PlayerSettings:
-                            obj = new PlayerSettings(objectReader);
-                            break;
-                        case ClassIDType.PreloadData:
-                            obj = new PreloadData(objectReader);
-                            break;
-                        case ClassIDType.RectTransform:
-                            obj = new RectTransform(objectReader);
-                            break;
-                        case ClassIDType.Shader: 
-                            obj = new Shader(objectReader);
-                            break;
-                        case ClassIDType.SkinnedMeshRenderer:
-                            obj = new SkinnedMeshRenderer(objectReader);
-                            break;
-                        case ClassIDType.Sprite:
-                            obj = new Sprite(objectReader);
-                            break;
-                        case ClassIDType.SpriteAtlas:
-                            obj = new SpriteAtlas(objectReader);
-                            break;
-                        case ClassIDType.TextAsset:
-                            obj = new TextAsset(objectReader);
-                            break;
-                        case ClassIDType.Texture2D:
-                            obj = objectReader.serializedType?.m_Type != null && LoadingViaTypeTreeEnabled
-                                ? new Texture2D(objectReader, TypeTreeHelper.ReadTypeByteArray(objectReader.serializedType.m_Type, objectReader), jsonOptions)
-                                : new Texture2D(objectReader);
-                            break;
-                        case ClassIDType.Texture2DArray:
-                            obj = objectReader.serializedType?.m_Type != null && LoadingViaTypeTreeEnabled
-                                ? new Texture2DArray(objectReader, TypeTreeHelper.ReadTypeByteArray(objectReader.serializedType.m_Type, objectReader), jsonOptions)
-                                : new Texture2DArray(objectReader);
-                            break;
-                        case ClassIDType.Transform:
-                            obj = new Transform(objectReader);
-                            break;
-                        case ClassIDType.VideoClip:
-                            obj = new VideoClip(objectReader);
-                            break;
-                        case ClassIDType.ResourceManager:
-                            obj = new ResourceManager(objectReader);
-                            break;
-                        default:
-                            obj = new Object(objectReader);
-                            break;
-                    }
-                    if (obj != null)
-                    {
-                        assetsFile.AddObject(obj);
-                    }
+                        ClassIDType.Animation => new Animation(objectReader),
+                        ClassIDType.AnimationClip
+                            => objectReader.serializedType?.m_Type != null && LoadingViaTypeTreeEnabled
+                                ? new AnimationClip
+                                (
+                                    objectReader,
+                                    TypeTreeHelper.ReadTypeByteArray(objectReader.serializedType.m_Type, objectReader),
+                                    jsonOptions, objectInfo
+                                )
+                                : new AnimationClip(objectReader),
+                        ClassIDType.Animator => new Animator(objectReader),
+                        ClassIDType.AnimatorController => new AnimatorController(objectReader),
+                        ClassIDType.AnimatorOverrideController => new AnimatorOverrideController(objectReader),
+                        ClassIDType.AssetBundle => new AssetBundle(objectReader),
+                        ClassIDType.AudioClip => new AudioClip(objectReader),
+                        ClassIDType.Avatar => new Avatar(objectReader),
+                        ClassIDType.BuildSettings => new BuildSettings(objectReader),
+                        ClassIDType.Font => new Font(objectReader),
+                        ClassIDType.GameObject => new GameObject(objectReader),
+                        ClassIDType.Material
+                            => objectReader.serializedType?.m_Type != null && LoadingViaTypeTreeEnabled
+                                ? new Material
+                                (
+                                    objectReader,
+                                    TypeTreeHelper.ReadTypeByteArray(objectReader.serializedType.m_Type, objectReader),
+                                    jsonOptions
+                                )
+                                : new Material(objectReader),
+                        ClassIDType.Mesh => new Mesh(objectReader),
+                        ClassIDType.MeshFilter => new MeshFilter(objectReader),
+                        ClassIDType.MeshRenderer => new MeshRenderer(objectReader),
+                        ClassIDType.MonoBehaviour => new MonoBehaviour(objectReader),
+                        ClassIDType.MonoScript => new MonoScript(objectReader),
+                        ClassIDType.MovieTexture => new MovieTexture(objectReader),
+                        ClassIDType.PlayerSettings => new PlayerSettings(objectReader),
+                        ClassIDType.PreloadData => new PreloadData(objectReader),
+                        ClassIDType.RectTransform => new RectTransform(objectReader),
+                        ClassIDType.Shader => new Shader(objectReader),
+                        ClassIDType.SkinnedMeshRenderer => new SkinnedMeshRenderer(objectReader),
+                        ClassIDType.Sprite => new Sprite(objectReader),
+                        ClassIDType.SpriteAtlas => new SpriteAtlas(objectReader),
+                        ClassIDType.TextAsset => new TextAsset(objectReader),
+                        ClassIDType.Texture2D
+                            => objectReader.serializedType?.m_Type != null && LoadingViaTypeTreeEnabled
+                                ? new Texture2D
+                                (
+                                    objectReader,
+                                    TypeTreeHelper.ReadTypeByteArray(objectReader.serializedType.m_Type, objectReader),
+                                    jsonOptions
+                                )
+                                : new Texture2D(objectReader),
+                        ClassIDType.Texture2DArray =>
+                            objectReader.serializedType?.m_Type != null && LoadingViaTypeTreeEnabled
+                                ? new Texture2DArray
+                                (
+                                    objectReader,
+                                    TypeTreeHelper.ReadTypeByteArray(objectReader.serializedType.m_Type, objectReader),
+                                    jsonOptions
+                                )
+                                : new Texture2DArray(objectReader),
+                        ClassIDType.Transform => new Transform(objectReader),
+                        ClassIDType.VideoClip => new VideoClip(objectReader),
+                        ClassIDType.ResourceManager => new ResourceManager(objectReader),
+                        _ => new Object(objectReader)
+                    };
+                    
+                    assetsFile.AddObject(obj);
                 }
                 catch (Exception e)
                 {
                     var sb = new StringBuilder();
                     sb.AppendLine("Unable to load object")
-                        .AppendLine($"Assets {assetsFile.fileName}")
-                        .AppendLine($"Path {assetsFile.originalPath}")
-                        .AppendLine($"Type {objectReader.type}")
-                        .AppendLine($"PathID {objectInfo.m_PathID}")
-                        .Append(e);
+                      .AppendLine($"Assets {assetsFile.fileName}")
+                      .AppendLine($"Path {assetsFile.originalPath}")
+                      .AppendLine($"Type {objectReader.type}")
+                      .AppendLine($"PathID {objectInfo.m_PathID}")
+                      .Append(e);
                     Logger.Warning(sb.ToString());
                 }
 

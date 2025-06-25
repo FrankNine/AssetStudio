@@ -20,12 +20,12 @@ using Ansi = AssetStudio.ColorConsole;
 
 internal static class Studio
 {
-    public static AssetsManager assetsManager = new AssetsManager();
-    public static List<AssetItem> parsedAssetsList = new List<AssetItem>();
-    public static List<BaseNode> gameObjectTree = new List<BaseNode>();
-    public static AssemblyLoader assemblyLoader = new AssemblyLoader();
-    public static Dictionary<MonoBehaviour, CubismModel> l2dModelDict = new Dictionary<MonoBehaviour, CubismModel>();
-    private static Dictionary<AssetStudio.Object, string> containers = new Dictionary<AssetStudio.Object, string>();
+    public static AssetsManager assetsManager = new();
+    public static List<AssetItem> parsedAssetsList = [];
+    public static List<BaseNode> gameObjectTree = [];
+    public static AssemblyLoader assemblyLoader = new();
+    public static Dictionary<MonoBehaviour, CubismModel> l2dModelDict = new();
+    private static Dictionary<AssetStudio.Object, string> containers = new();
 
     static Studio()
     {
@@ -1104,19 +1104,11 @@ internal static class Studio
                     return null;
                 var mocPathSpan = mocPath.AsSpan();
                 var modelNameFromPath = mocPathSpan.Slice(mocPathSpan.LastIndexOf('/') + 1);
-#if NET9_0_OR_GREATER
                 foreach (var range in assetKvp.Value.AsSpan().Split('/'))
                 {
                     if (modelNameFromPath.SequenceEqual(assetKvp.Value.AsSpan()[range]))
                         return assetKvp.Key;
                 }
-#else
-                    foreach (var str in assetKvp.Value.Split('/'))
-                    {
-                        if (modelNameFromPath.SequenceEqual(str.AsSpan()))
-                            return assetKvp.Key;
-                    }
-#endif
                 return null;
             }).Where(x => x != null).ToList();
 

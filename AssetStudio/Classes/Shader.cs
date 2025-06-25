@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AssetStudio;
+﻿namespace AssetStudio;
 
 using System.IO;
 using System.Linq;

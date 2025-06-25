@@ -84,13 +84,13 @@ internal enum SelectedAssetType
 
 internal static class Studio
 {
-    public static AssetsManager assetsManager = new AssetsManager();
-    public static AssemblyLoader assemblyLoader = new AssemblyLoader();
-    public static List<AssetItem> exportableAssets = new List<AssetItem>();
-    public static List<AssetItem> visibleAssets = new List<AssetItem>();
-    public static Dictionary<MonoBehaviour, CubismModel> l2dModelDict = new Dictionary<MonoBehaviour, CubismModel>();
-    private static Dictionary<Object, string> l2dAssetContainers = new Dictionary<Object, string>();
-    internal static Action<string> StatusStripUpdate = x => { };
+    public static AssetsManager assetsManager = new();
+    public static AssemblyLoader assemblyLoader = new();
+    public static List<AssetItem> exportableAssets = [];
+    public static List<AssetItem> visibleAssets = [];
+    public static Dictionary<MonoBehaviour, CubismModel> l2dModelDict = new();
+    private static Dictionary<Object, string> l2dAssetContainers = new();
+    internal static Action<string> StatusStripUpdate = _ => { };
 
     public static int ExtractFolder(string path, string savePath)
     {
@@ -270,12 +270,12 @@ internal static class Studio
                         assetItem.Text = m_Shader.m_ParsedForm?.m_Name ?? m_Shader.m_Name;
                         exportable = true;
                         break;
-                    case Mesh _:
-                    case TextAsset _:
-                    case AnimationClip _:
-                    case Font _:
-                    case MovieTexture _:
-                    case Sprite _:
+                    case Mesh:
+                    case TextAsset:
+                    case AnimationClip:
+                    case Font:
+                    case MovieTexture:
+                    case Sprite:
                         assetItem.Text = ((NamedObject)asset).m_Name;
                         exportable = true;
                         break;
@@ -351,7 +351,7 @@ internal static class Studio
                         assetItem.Text = m_NamedObject.m_Name;
                         break;
                 }
-                if (assetItem.Text == "")
+                if (string.IsNullOrEmpty(assetItem.Text))
                 {
                     assetItem.Text = assetItem.TypeString + assetItem.UniqueID;
                 }
@@ -363,6 +363,7 @@ internal static class Studio
                 Progress.Report(++i, objectCount);
             }
         }
+        
         foreach (var (pptr, container) in containers)
         {
             if (pptr.TryGet(out var obj))
@@ -376,14 +377,15 @@ internal static class Studio
                             m_GameObject.CubismModel.Container = container;
                         }
                         break;
-                    case AnimationClip _:
-                    case Texture2D _:
-                    case MonoBehaviour _:
+                    case AnimationClip:
+                    case Texture2D:
+                    case MonoBehaviour:
                         l2dAssetContainers[obj] = container;
                         break;
                 }
             }
         }
+        
         foreach (var tex2dAssetItem in tex2dArrayAssetList)
         {
             var m_Texture2DArray = (Texture2DArray)tex2dAssetItem.Asset;
@@ -1202,19 +1204,11 @@ internal static class Studio
                         return null;
                     var mocPathSpan = mocPath.AsSpan();
                     var modelNameFromPath = mocPathSpan.Slice(mocPathSpan.LastIndexOf('/') + 1);
-#if NET9_0_OR_GREATER
                     foreach (var range in assetKvp.Value.AsSpan().Split('/'))
                     {
                         if (modelNameFromPath.SequenceEqual(assetKvp.Value.AsSpan()[range]))
                             return assetKvp.Key;
                     }
-#else
-                        foreach (var str in assetKvp.Value.Split('/'))
-                        {
-                            if (modelNameFromPath.SequenceEqual(str.AsSpan()))
-                                return assetKvp.Key;
-                        }
-#endif
                     return null;
                 }).Where(x => x != null).ToList();
 

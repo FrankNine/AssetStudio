@@ -29,12 +29,12 @@ internal class AssetItem : ListViewItem
 
     public void SetSubItems()
     {
-        SubItems.AddRange(new[]
-        {
+        SubItems.AddRange(
+        [
             Container, //Container
             TypeString, //Type
             m_PathID.ToString(), //PathID
             FullSize.ToString(), //Size
-        });
+        ]);
     }
 }

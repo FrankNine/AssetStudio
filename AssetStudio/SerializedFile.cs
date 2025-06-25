@@ -11,7 +11,7 @@ public class SerializedFile
     public string fullName;
     public string originalPath;
     public string fileName;
-    public UnityVersion version = new UnityVersion();
+    public UnityVersion version;
     public List<Object> Objects;
     public Dictionary<long, Object> ObjectsDic;
 
