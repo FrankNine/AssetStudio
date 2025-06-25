@@ -638,9 +638,8 @@ public class AssetsManager
                         case ClassIDType.RectTransform:
                             obj = new RectTransform(objectReader);
                             break;
-                        case ClassIDType.Shader:
-                            if (objectReader.version < 2021)
-                                obj = new Shader(objectReader);
+                        case ClassIDType.Shader: 
+                            obj = new Shader(objectReader);
                             break;
                         case ClassIDType.SkinnedMeshRenderer:
                             obj = new SkinnedMeshRenderer(objectReader);

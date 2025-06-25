@@ -154,45 +154,45 @@ public static class ShaderConverter
             {
                 sb.Append(ConvertSerializedShaderState(m_Passe.m_State));
 
-                if (m_Passe.m_ProgVertex.m_SubPrograms.Length > 0)
+                if (m_Passe.progVertex.m_SubPrograms.Length > 0)
                 {
                     sb.Append("Program \"vp\" {\n");
-                    sb.Append(ConvertSerializedSubPrograms(m_Passe.m_ProgVertex.m_SubPrograms, platforms, shaderPrograms));
+                    sb.Append(ConvertSerializedSubPrograms(m_Passe.progVertex.m_SubPrograms, platforms, shaderPrograms));
                     sb.Append("}\n");
                 }
 
-                if (m_Passe.m_ProgFragment.m_SubPrograms.Length > 0)
+                if (m_Passe.progFragment.m_SubPrograms.Length > 0)
                 {
                     sb.Append("Program \"fp\" {\n");
-                    sb.Append(ConvertSerializedSubPrograms(m_Passe.m_ProgFragment.m_SubPrograms, platforms, shaderPrograms));
+                    sb.Append(ConvertSerializedSubPrograms(m_Passe.progFragment.m_SubPrograms, platforms, shaderPrograms));
                     sb.Append("}\n");
                 }
 
-                if (m_Passe.m_ProgGeometry.m_SubPrograms.Length > 0)
+                if (m_Passe.progGeometry.m_SubPrograms.Length > 0)
                 {
                     sb.Append("Program \"gp\" {\n");
-                    sb.Append(ConvertSerializedSubPrograms(m_Passe.m_ProgGeometry.m_SubPrograms, platforms, shaderPrograms));
+                    sb.Append(ConvertSerializedSubPrograms(m_Passe.progGeometry.m_SubPrograms, platforms, shaderPrograms));
                     sb.Append("}\n");
                 }
 
-                if (m_Passe.m_ProgHull.m_SubPrograms.Length > 0)
+                if (m_Passe.progHull.m_SubPrograms.Length > 0)
                 {
                     sb.Append("Program \"hp\" {\n");
-                    sb.Append(ConvertSerializedSubPrograms(m_Passe.m_ProgHull.m_SubPrograms, platforms, shaderPrograms));
+                    sb.Append(ConvertSerializedSubPrograms(m_Passe.progHull.m_SubPrograms, platforms, shaderPrograms));
                     sb.Append("}\n");
                 }
 
-                if (m_Passe.m_ProgDomain.m_SubPrograms.Length > 0)
+                if (m_Passe.progDomain.m_SubPrograms.Length > 0)
                 {
                     sb.Append("Program \"dp\" {\n");
-                    sb.Append(ConvertSerializedSubPrograms(m_Passe.m_ProgDomain.m_SubPrograms, platforms, shaderPrograms));
+                    sb.Append(ConvertSerializedSubPrograms(m_Passe.progDomain.m_SubPrograms, platforms, shaderPrograms));
                     sb.Append("}\n");
                 }
 
-                if (m_Passe.m_ProgRayTracing?.m_SubPrograms.Length > 0)
+                if (m_Passe.progRayTracing?.m_SubPrograms.Length > 0)
                 {
                     sb.Append("Program \"rtp\" {\n");
-                    sb.Append(ConvertSerializedSubPrograms(m_Passe.m_ProgRayTracing.m_SubPrograms, platforms, shaderPrograms));
+                    sb.Append(ConvertSerializedSubPrograms(m_Passe.progRayTracing.m_SubPrograms, platforms, shaderPrograms));
                     sb.Append("}\n");
                 }
             }
@@ -257,20 +257,20 @@ public static class ShaderConverter
 
         sb.Append(ConvertSerializedShaderRTBlendState(m_State.m_RtBlend, m_State.m_RtSeparateBlend));
 
-        if (m_State.m_AlphaToMask.m_Val > 0f)
+        if (m_State.alphaToMask.val > 0f)
         {
             sb.Append("  AlphaToMask On\n");
         }
 
-        if (m_State.m_ZClip?.m_Val != 1f) //ZClip On
+        if (m_State.m_ZClip?.val != 1f) //ZClip On
         {
             sb.Append("  ZClip Off\n");
         }
 
-        if (m_State.m_ZTest.m_Val != 4f) //ZTest LEqual
+        if (m_State.m_ZTest.val != 4f) //ZTest LEqual
         {
             sb.Append("  ZTest ");
-            switch (m_State.m_ZTest.m_Val) //enum CompareFunction
+            switch (m_State.m_ZTest.val) //enum CompareFunction
             {
                 case 0f: //kFuncDisabled
                     sb.Append("Off");
@@ -301,15 +301,15 @@ public static class ShaderConverter
             sb.Append("\n");
         }
 
-        if (m_State.m_ZWrite.m_Val != 1f) //ZWrite On
+        if (m_State.m_ZWrite.val != 1f) //ZWrite On
         {
             sb.Append("  ZWrite Off\n");
         }
 
-        if (m_State.m_Culling.m_Val != 2f) //Cull Back
+        if (m_State.culling.val != 2f) //Cull Back
         {
             sb.Append("  Cull ");
-            switch (m_State.m_Culling.m_Val) //enum CullMode
+            switch (m_State.culling.val) //enum CullMode
             {
                 case 0f: //kCullOff
                     sb.Append("Off");
@@ -321,78 +321,78 @@ public static class ShaderConverter
             sb.Append("\n");
         }
 
-        if (m_State.m_OffsetFactor.m_Val != 0f || m_State.m_OffsetUnits.m_Val != 0f)
+        if (m_State.offsetFactor.val != 0f || m_State.offsetUnits.val != 0f)
         {
-            sb.Append($"  Offset {m_State.m_OffsetFactor.m_Val}, {m_State.m_OffsetUnits.m_Val}\n");
+            sb.Append($"  Offset {m_State.offsetFactor.val}, {m_State.offsetUnits.val}\n");
         }
 
-        if (m_State.m_StencilRef.m_Val != 0f ||
-            m_State.m_StencilReadMask.m_Val != 255f ||
-            m_State.m_StencilWriteMask.m_Val != 255f ||
-            m_State.m_StencilOp.m_Pass.m_Val != 0f ||
-            m_State.m_StencilOp.m_Fail.m_Val != 0f ||
-            m_State.m_StencilOp.m_ZFail.m_Val != 0f ||
-            m_State.m_StencilOp.m_Comp.m_Val != 8f ||
-            m_State.m_StencilOpFront.m_Pass.m_Val != 0f ||
-            m_State.m_StencilOpFront.m_Fail.m_Val != 0f ||
-            m_State.m_StencilOpFront.m_ZFail.m_Val != 0f ||
-            m_State.m_StencilOpFront.m_Comp.m_Val != 8f ||
-            m_State.m_StencilOpBack.m_Pass.m_Val != 0f ||
-            m_State.m_StencilOpBack.m_Fail.m_Val != 0f ||
-            m_State.m_StencilOpBack.m_ZFail.m_Val != 0f ||
-            m_State.m_StencilOpBack.m_Comp.m_Val != 8f)
+        if (m_State.stencilRef.val != 0f ||
+            m_State.stencilReadMask.val != 255f ||
+            m_State.stencilWriteMask.val != 255f ||
+            m_State.stencilOp.pass.val != 0f ||
+            m_State.stencilOp.fail.val != 0f ||
+            m_State.stencilOp.zFail.val != 0f ||
+            m_State.stencilOp.comp.val != 8f ||
+            m_State.stencilOpFront.pass.val != 0f ||
+            m_State.stencilOpFront.fail.val != 0f ||
+            m_State.stencilOpFront.zFail.val != 0f ||
+            m_State.stencilOpFront.comp.val != 8f ||
+            m_State.stencilOpBack.pass.val != 0f ||
+            m_State.stencilOpBack.fail.val != 0f ||
+            m_State.stencilOpBack.zFail.val != 0f ||
+            m_State.stencilOpBack.comp.val != 8f)
         {
             sb.Append("  Stencil {\n");
-            if (m_State.m_StencilRef.m_Val != 0f)
+            if (m_State.stencilRef.val != 0f)
             {
-                sb.Append($"   Ref {m_State.m_StencilRef.m_Val}\n");
+                sb.Append($"   Ref {m_State.stencilRef.val}\n");
             }
-            if (m_State.m_StencilReadMask.m_Val != 255f)
+            if (m_State.stencilReadMask.val != 255f)
             {
-                sb.Append($"   ReadMask {m_State.m_StencilReadMask.m_Val}\n");
+                sb.Append($"   ReadMask {m_State.stencilReadMask.val}\n");
             }
-            if (m_State.m_StencilWriteMask.m_Val != 255f)
+            if (m_State.stencilWriteMask.val != 255f)
             {
-                sb.Append($"   WriteMask {m_State.m_StencilWriteMask.m_Val}\n");
+                sb.Append($"   WriteMask {m_State.stencilWriteMask.val}\n");
             }
-            if (m_State.m_StencilOp.m_Pass.m_Val != 0f ||
-                m_State.m_StencilOp.m_Fail.m_Val != 0f ||
-                m_State.m_StencilOp.m_ZFail.m_Val != 0f ||
-                m_State.m_StencilOp.m_Comp.m_Val != 8f)
+            if (m_State.stencilOp.pass.val != 0f ||
+                m_State.stencilOp.fail.val != 0f ||
+                m_State.stencilOp.zFail.val != 0f ||
+                m_State.stencilOp.comp.val != 8f)
             {
-                sb.Append(ConvertSerializedStencilOp(m_State.m_StencilOp, ""));
+                sb.Append(ConvertSerializedStencilOp(m_State.stencilOp, ""));
             }
-            if (m_State.m_StencilOpFront.m_Pass.m_Val != 0f ||
-                m_State.m_StencilOpFront.m_Fail.m_Val != 0f ||
-                m_State.m_StencilOpFront.m_ZFail.m_Val != 0f ||
-                m_State.m_StencilOpFront.m_Comp.m_Val != 8f)
+            if (m_State.stencilOpFront.pass.val != 0f ||
+                m_State.stencilOpFront.fail.val != 0f ||
+                m_State.stencilOpFront.zFail.val != 0f ||
+                m_State.stencilOpFront.comp.val != 8f)
             {
-                sb.Append(ConvertSerializedStencilOp(m_State.m_StencilOpFront, "Front"));
+                sb.Append(ConvertSerializedStencilOp(m_State.stencilOpFront, "Front"));
             }
-            if (m_State.m_StencilOpBack.m_Pass.m_Val != 0f ||
-                m_State.m_StencilOpBack.m_Fail.m_Val != 0f ||
-                m_State.m_StencilOpBack.m_ZFail.m_Val != 0f ||
-                m_State.m_StencilOpBack.m_Comp.m_Val != 8f)
+            if (m_State.stencilOpBack.pass.val != 0f ||
+                m_State.stencilOpBack.fail.val != 0f ||
+                m_State.stencilOpBack.zFail.val != 0f ||
+                m_State.stencilOpBack.comp.val != 8f)
             {
-                sb.Append(ConvertSerializedStencilOp(m_State.m_StencilOpBack, "Back"));
+                sb.Append(ConvertSerializedStencilOp(m_State.stencilOpBack, "Back"));
             }
             sb.Append("  }\n");
         }
 
-        if (m_State.m_FogMode != FogMode.Unknown ||
-            m_State.m_FogColor.m_X.m_Val != 0f ||
-            m_State.m_FogColor.m_Y.m_Val != 0f ||
-            m_State.m_FogColor.m_Z.m_Val != 0f ||
-            m_State.m_FogColor.m_W.m_Val != 0f ||
-            m_State.m_FogDensity.m_Val != 0f ||
-            m_State.m_FogStart.m_Val != 0f ||
-            m_State.m_FogEnd.m_Val != 0f)
+        if (m_State.fogMode != FogMode.Unknown ||
+            m_State.fogColor.x.val != 0f ||
+            m_State.fogColor.y.val != 0f ||
+            m_State.fogColor.z.val != 0f ||
+            m_State.fogColor.w.val != 0f ||
+            m_State.fogDensity.val != 0f ||
+            m_State.fogStart.val != 0f ||
+            m_State.fogEnd.val != 0f)
         {
             sb.Append("  Fog {\n");
-            if (m_State.m_FogMode != FogMode.Unknown)
+            if (m_State.fogMode != FogMode.Unknown)
             {
                 sb.Append("   Mode ");
-                switch (m_State.m_FogMode)
+                switch (m_State.fogMode)
                 {
                     case FogMode.Disabled:
                         sb.Append("Off");
@@ -409,35 +409,35 @@ public static class ShaderConverter
                 }
                 sb.Append("\n");
             }
-            if (m_State.m_FogColor.m_X.m_Val != 0f ||
-                m_State.m_FogColor.m_Y.m_Val != 0f ||
-                m_State.m_FogColor.m_Z.m_Val != 0f ||
-                m_State.m_FogColor.m_W.m_Val != 0f)
+            if (m_State.fogColor.x.val != 0f ||
+                m_State.fogColor.y.val != 0f ||
+                m_State.fogColor.z.val != 0f ||
+                m_State.fogColor.w.val != 0f)
             {
                 sb.AppendFormat("   Color ({0},{1},{2},{3})\n",
-                    m_State.m_FogColor.m_X.m_Val.ToString(CultureInfo.InvariantCulture),
-                    m_State.m_FogColor.m_Y.m_Val.ToString(CultureInfo.InvariantCulture),
-                    m_State.m_FogColor.m_Z.m_Val.ToString(CultureInfo.InvariantCulture),
-                    m_State.m_FogColor.m_W.m_Val.ToString(CultureInfo.InvariantCulture));
+                    m_State.fogColor.x.val.ToString(CultureInfo.InvariantCulture),
+                    m_State.fogColor.y.val.ToString(CultureInfo.InvariantCulture),
+                    m_State.fogColor.z.val.ToString(CultureInfo.InvariantCulture),
+                    m_State.fogColor.w.val.ToString(CultureInfo.InvariantCulture));
             }
-            if (m_State.m_FogDensity.m_Val != 0f)
+            if (m_State.fogDensity.val != 0f)
             {
-                sb.Append($"   Density {m_State.m_FogDensity.m_Val.ToString(CultureInfo.InvariantCulture)}\n");
+                sb.Append($"   Density {m_State.fogDensity.val.ToString(CultureInfo.InvariantCulture)}\n");
             }
-            if (m_State.m_FogStart.m_Val != 0f ||
-                m_State.m_FogEnd.m_Val != 0f)
+            if (m_State.fogStart.val != 0f ||
+                m_State.fogEnd.val != 0f)
             {
-                sb.Append($"   Range {m_State.m_FogStart.m_Val.ToString(CultureInfo.InvariantCulture)}, {m_State.m_FogEnd.m_Val.ToString(CultureInfo.InvariantCulture)}\n");
+                sb.Append($"   Range {m_State.fogStart.val.ToString(CultureInfo.InvariantCulture)}, {m_State.fogEnd.val.ToString(CultureInfo.InvariantCulture)}\n");
             }
             sb.Append("  }\n");
         }
 
-        if (m_State.m_Lighting)
+        if (m_State.lighting)
         {
-            sb.Append($"  Lighting {(m_State.m_Lighting ? "On" : "Off")}\n");
+            sb.Append($"  Lighting {(m_State.lighting ? "On" : "Off")}\n");
         }
 
-        sb.Append($"  GpuProgramID {m_State.m_GpuProgramID}\n");
+        sb.Append($"  GpuProgramID {m_State.gpuProgramID}\n");
 
         return sb.ToString();
     }
@@ -445,16 +445,16 @@ public static class ShaderConverter
     private static string ConvertSerializedStencilOp(SerializedStencilOp stencilOp, string suffix)
     {
         var sb = new StringBuilder();
-        sb.Append($"   Comp{suffix} {ConvertStencilComp(stencilOp.m_Comp)}\n");
-        sb.Append($"   Pass{suffix} {ConvertStencilOp(stencilOp.m_Pass)}\n");
-        sb.Append($"   Fail{suffix} {ConvertStencilOp(stencilOp.m_Fail)}\n");
-        sb.Append($"   ZFail{suffix} {ConvertStencilOp(stencilOp.m_ZFail)}\n");
+        sb.Append($"   Comp{suffix} {ConvertStencilComp(stencilOp.comp)}\n");
+        sb.Append($"   Pass{suffix} {ConvertStencilOp(stencilOp.pass)}\n");
+        sb.Append($"   Fail{suffix} {ConvertStencilOp(stencilOp.fail)}\n");
+        sb.Append($"   ZFail{suffix} {ConvertStencilOp(stencilOp.zFail)}\n");
         return sb.ToString();
     }
 
     private static string ConvertStencilOp(SerializedShaderFloatValue op)
     {
-        switch (op.m_Val)
+        switch (op.val)
         {
             case 0f:
             default:
@@ -478,7 +478,7 @@ public static class ShaderConverter
 
     private static string ConvertStencilComp(SerializedShaderFloatValue comp)
     {
-        switch (comp.m_Val)
+        switch (comp.val)
         {
             case 0f:
                 return "Disabled";
@@ -508,42 +508,42 @@ public static class ShaderConverter
         for (var i = 0; i < rtBlend.Length; i++)
         {
             var blend = rtBlend[i];
-            if (blend.m_SrcBlend.m_Val != 1f ||
-                blend.m_DestBlend.m_Val != 0f ||
-                blend.m_SrcBlendAlpha.m_Val != 1f ||
-                blend.m_DestBlendAlpha.m_Val != 0f)
+            if (blend.srcBlend.val != 1f ||
+                blend.destBlend.val != 0f ||
+                blend.srcBlendAlpha.val != 1f ||
+                blend.destBlendAlpha.val != 0f)
             {
                 sb.Append("  Blend ");
                 if (i != 0 || rtSeparateBlend)
                 {
                     sb.Append($"{i} ");
                 }
-                sb.Append($"{ConvertBlendFactor(blend.m_SrcBlend)} {ConvertBlendFactor(blend.m_DestBlend)}");
-                if (blend.m_SrcBlendAlpha.m_Val != 1f ||
-                    blend.m_DestBlendAlpha.m_Val != 0f)
+                sb.Append($"{ConvertBlendFactor(blend.srcBlend)} {ConvertBlendFactor(blend.destBlend)}");
+                if (blend.srcBlendAlpha.val != 1f ||
+                    blend.destBlendAlpha.val != 0f)
                 {
-                    sb.Append($", {ConvertBlendFactor(blend.m_SrcBlendAlpha)} {ConvertBlendFactor(blend.m_DestBlendAlpha)}");
+                    sb.Append($", {ConvertBlendFactor(blend.srcBlendAlpha)} {ConvertBlendFactor(blend.destBlendAlpha)}");
                 }
                 sb.Append("\n");
             }
 
-            if (blend.m_BlendOp.m_Val != 0f ||
-                blend.m_BlendOpAlpha.m_Val != 0f)
+            if (blend.blendOp.val != 0f ||
+                blend.blendOpAlpha.val != 0f)
             {
                 sb.Append("  BlendOp ");
                 if (i != 0 || rtSeparateBlend)
                 {
                     sb.Append($"{i} ");
                 }
-                sb.Append(ConvertBlendOp(blend.m_BlendOp));
-                if (blend.m_BlendOpAlpha.m_Val != 0f)
+                sb.Append(ConvertBlendOp(blend.blendOp));
+                if (blend.blendOpAlpha.val != 0f)
                 {
-                    sb.Append($", {ConvertBlendOp(blend.m_BlendOpAlpha)}");
+                    sb.Append($", {ConvertBlendOp(blend.blendOpAlpha)}");
                 }
                 sb.Append("\n");
             }
 
-            var val = (int)blend.m_ColMask.m_Val;
+            var val = (int)blend.colMask.val;
             if (val != 0xf)
             {
                 sb.Append("  ColorMask ");
@@ -578,7 +578,7 @@ public static class ShaderConverter
 
     private static string ConvertBlendOp(SerializedShaderFloatValue op)
     {
-        switch (op.m_Val)
+        switch (op.val)
         {
             case 0f:
             default:
@@ -628,7 +628,7 @@ public static class ShaderConverter
 
     private static string ConvertBlendFactor(SerializedShaderFloatValue factor)
     {
-        switch (factor.m_Val)
+        switch (factor.val)
         {
             case 0f:
                 return "Zero";
@@ -659,11 +659,11 @@ public static class ShaderConverter
     private static string ConvertSerializedTagMap(SerializedTagMap m_Tags, int intent)
     {
         var sb = new StringBuilder();
-        if (m_Tags.m_Tags.Length > 0)
+        if (m_Tags.tags.Length > 0)
         {
             sb.Append(new string(' ', intent));
             sb.Append("Tags { ");
-            foreach (var pair in m_Tags.m_Tags)
+            foreach (var pair in m_Tags.tags)
             {
                 sb.Append($"\"{pair.Key}\" = \"{pair.Value}\" ");
             }

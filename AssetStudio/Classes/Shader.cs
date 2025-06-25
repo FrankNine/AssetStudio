@@ -1,4 +1,6 @@
-﻿namespace AssetStudio;
+﻿using System;
+
+namespace AssetStudio;
 
 using System.IO;
 using System.Linq;
@@ -8,10 +10,8 @@ public class Hash128
 {
     public byte[] bytes;
 
-    public Hash128(BinaryReader reader)
-    {
-        bytes = reader.ReadBytes(16);
-    }
+    public Hash128(BinaryReader reader) 
+        => bytes = reader.ReadBytes(16);
 }
 
 public class StructParameter
@@ -44,13 +44,13 @@ public class StructParameter
 
 public class SamplerParameter
 {
-    public uint sampler;
-    public int bindPoint;
+    public uint m_Sampler;
+    public int m_BindPoint;
 
     public SamplerParameter(BinaryReader reader)
     {
-        sampler = reader.ReadUInt32();
-        bindPoint = reader.ReadInt32();
+        m_Sampler = reader.ReadUInt32();
+        m_BindPoint = reader.ReadInt32();
     }
 }
 public enum TextureDimension
@@ -209,33 +209,33 @@ public class SerializedShaderState
     public SerializedShaderFloatValue m_ZClip;
     public SerializedShaderFloatValue m_ZTest;
     public SerializedShaderFloatValue m_ZWrite;
-    public SerializedShaderFloatValue m_Culling;
-    public SerializedShaderFloatValue m_Conservative;
-    public SerializedShaderFloatValue m_OffsetFactor;
-    public SerializedShaderFloatValue m_OffsetUnits;
-    public SerializedShaderFloatValue m_AlphaToMask;
-    public SerializedStencilOp m_StencilOp;
-    public SerializedStencilOp m_StencilOpFront;
-    public SerializedStencilOp m_StencilOpBack;
-    public SerializedShaderFloatValue m_StencilReadMask;
-    public SerializedShaderFloatValue m_StencilWriteMask;
-    public SerializedShaderFloatValue m_StencilRef;
-    public SerializedShaderFloatValue m_FogStart;
-    public SerializedShaderFloatValue m_FogEnd;
-    public SerializedShaderFloatValue m_FogDensity;
-    public SerializedShaderVectorValue m_FogColor;
-    public FogMode m_FogMode;
-    public int m_GpuProgramID;
+    public SerializedShaderFloatValue culling;
+    public SerializedShaderFloatValue conservative;
+    public SerializedShaderFloatValue offsetFactor;
+    public SerializedShaderFloatValue offsetUnits;
+    public SerializedShaderFloatValue alphaToMask;
+    public SerializedStencilOp stencilOp;
+    public SerializedStencilOp stencilOpFront;
+    public SerializedStencilOp stencilOpBack;
+    public SerializedShaderFloatValue stencilReadMask;
+    public SerializedShaderFloatValue stencilWriteMask;
+    public SerializedShaderFloatValue stencilRef;
+    public SerializedShaderFloatValue fogStart;
+    public SerializedShaderFloatValue fogEnd;
+    public SerializedShaderFloatValue fogDensity;
+    public SerializedShaderVectorValue fogColor;
+    public FogMode fogMode;
+    public int gpuProgramID;
     public SerializedTagMap m_Tags;
     public int m_LOD;
-    public bool m_Lighting;
+    public bool lighting;
 
     public SerializedShaderState(ObjectReader reader)
     {
         var version = reader.version;
 
         m_Name = reader.ReadAlignedString();
-        m_RtBlend = new SerializedShaderRTBlendState[8];
+        m_RtBlend = new SerializedShaderRTBlendState[8]; // rtBlend0 ~ rtBlend7
         for (int i = 0; i < 8; i++)
         {
             m_RtBlend[i] = new SerializedShaderRTBlendState(reader);
@@ -248,29 +248,29 @@ public class SerializedShaderState
         }
         m_ZTest = new SerializedShaderFloatValue(reader);
         m_ZWrite = new SerializedShaderFloatValue(reader);
-        m_Culling = new SerializedShaderFloatValue(reader);
+        culling = new SerializedShaderFloatValue(reader);
         if (version >= 2020) //2020.1 and up
         {
-            m_Conservative = new SerializedShaderFloatValue(reader);
+            conservative = new SerializedShaderFloatValue(reader);
         }
-        m_OffsetFactor = new SerializedShaderFloatValue(reader);
-        m_OffsetUnits = new SerializedShaderFloatValue(reader);
-        m_AlphaToMask = new SerializedShaderFloatValue(reader);
-        m_StencilOp = new SerializedStencilOp(reader);
-        m_StencilOpFront = new SerializedStencilOp(reader);
-        m_StencilOpBack = new SerializedStencilOp(reader);
-        m_StencilReadMask = new SerializedShaderFloatValue(reader);
-        m_StencilWriteMask = new SerializedShaderFloatValue(reader);
-        m_StencilRef = new SerializedShaderFloatValue(reader);
-        m_FogStart = new SerializedShaderFloatValue(reader);
-        m_FogEnd = new SerializedShaderFloatValue(reader);
-        m_FogDensity = new SerializedShaderFloatValue(reader);
-        m_FogColor = new SerializedShaderVectorValue(reader);
-        m_FogMode = (FogMode)reader.ReadInt32();
-        m_GpuProgramID = reader.ReadInt32();
+        offsetFactor = new SerializedShaderFloatValue(reader);
+        offsetUnits = new SerializedShaderFloatValue(reader);
+        alphaToMask = new SerializedShaderFloatValue(reader);
+        stencilOp = new SerializedStencilOp(reader);
+        stencilOpFront = new SerializedStencilOp(reader);
+        stencilOpBack = new SerializedStencilOp(reader);
+        stencilReadMask = new SerializedShaderFloatValue(reader);
+        stencilWriteMask = new SerializedShaderFloatValue(reader);
+        stencilRef = new SerializedShaderFloatValue(reader);
+        fogStart = new SerializedShaderFloatValue(reader);
+        fogEnd = new SerializedShaderFloatValue(reader);
+        fogDensity = new SerializedShaderFloatValue(reader);
+        fogColor = new SerializedShaderVectorValue(reader);
+        fogMode = (FogMode)reader.ReadInt32();
+        gpuProgramID = reader.ReadInt32();
         m_Tags = new SerializedTagMap(reader);
         m_LOD = reader.ReadInt32();
-        m_Lighting = reader.ReadBoolean();
+        lighting = reader.ReadBoolean();
         reader.AlignStream();
     }
 }
@@ -681,9 +681,29 @@ public class SerializedSubProgram
     }
 }
 
+public class SerializedPlayerSubProgram
+{
+    public uint m_BlobIndex;
+    public ushort[] m_KeywordIndices;
+    public long m_ShaderRequirements;
+    public ShaderGpuProgramType m_GpuProgramType;
+
+    public SerializedPlayerSubProgram(BinaryReader reader)
+    {
+        m_BlobIndex = reader.ReadUInt32();
+        m_KeywordIndices = reader.ReadUInt16Array();
+        reader.AlignStream();
+        m_ShaderRequirements = reader.ReadInt64();
+        m_GpuProgramType = (ShaderGpuProgramType)reader.ReadSByte();
+        reader.AlignStream();
+    }
+}
+
 public class SerializedProgram
 {
     public SerializedSubProgram[] m_SubPrograms;
+    public SerializedPlayerSubProgram[][] m_PlayerSubPrograms;
+    public uint[][] m_ParameterBlobIndices;
     public SerializedProgramParameters m_CommonParameters;
     public ushort[] m_SerializedKeywordStateMask;
 
@@ -696,6 +716,22 @@ public class SerializedProgram
         for (int i = 0; i < numSubPrograms; i++)
         {
             m_SubPrograms[i] = new SerializedSubProgram(reader);
+        }
+
+        if (((2021, 3, 10) <= version && version < 2022) || (2022, 1, 13) <= version)
+        {
+            var m_PlayerSubProgramsSize = reader.ReadInt32();
+            m_PlayerSubPrograms = new SerializedPlayerSubProgram[m_PlayerSubProgramsSize][];
+            for (int i = 0; i < m_PlayerSubProgramsSize; i++)
+            {
+                var m_PlayerSubProgramsSizeSize = reader.ReadInt32();
+                m_PlayerSubPrograms[i] = new SerializedPlayerSubProgram[m_PlayerSubProgramsSizeSize];
+                for (int j = 0; j < m_PlayerSubProgramsSizeSize; j++)
+                {
+                    m_PlayerSubPrograms[i][j] = new SerializedPlayerSubProgram(reader);
+                }
+            }
+            m_ParameterBlobIndices = reader.ReadUInt32ArrayArray();
         }
 
         if (version.IsInRange((2020, 3, 2), 2021) //2020.3.2f1 and up
@@ -729,12 +765,12 @@ public class SerializedPass
     public PassType m_Type;
     public SerializedShaderState m_State;
     public uint m_ProgramMask;
-    public SerializedProgram m_ProgVertex;
-    public SerializedProgram m_ProgFragment;
-    public SerializedProgram m_ProgGeometry;
-    public SerializedProgram m_ProgHull;
-    public SerializedProgram m_ProgDomain;
-    public SerializedProgram m_ProgRayTracing;
+    public SerializedProgram progVertex;
+    public SerializedProgram progFragment;
+    public SerializedProgram progGeometry;
+    public SerializedProgram progHull;
+    public SerializedProgram progDomain;
+    public SerializedProgram progRayTracing;
     public bool m_HasInstancingVariant;
     public string m_UseName;
     public string m_Name;
@@ -746,7 +782,7 @@ public class SerializedPass
     {
         var version = reader.version;
 
-        if (version >= (2020, 2)) //2020.2 and up
+        if ((2020, 2) <= version && version <= (2023, 3)) // 2020.2 to 2023.3
         {
             int numEditorDataHash = reader.ReadInt32();
             m_EditorDataHash = new Hash128[numEditorDataHash];
@@ -754,7 +790,9 @@ public class SerializedPass
             {
                 m_EditorDataHash[i] = new Hash128(reader);
             }
+
             reader.AlignStream();
+
             m_Platforms = reader.ReadUInt8Array();
             reader.AlignStream();
             if (version <= (2021, 1)) //2021.1 and down
@@ -776,14 +814,14 @@ public class SerializedPass
         m_Type = (PassType)reader.ReadInt32();
         m_State = new SerializedShaderState(reader);
         m_ProgramMask = reader.ReadUInt32();
-        m_ProgVertex = new SerializedProgram(reader);
-        m_ProgFragment = new SerializedProgram(reader);
-        m_ProgGeometry = new SerializedProgram(reader);
-        m_ProgHull = new SerializedProgram(reader);
-        m_ProgDomain = new SerializedProgram(reader);
+        progVertex = new SerializedProgram(reader);
+        progFragment = new SerializedProgram(reader);
+        progGeometry = new SerializedProgram(reader);
+        progHull = new SerializedProgram(reader);
+        progDomain = new SerializedProgram(reader);
         if (version >= (2019, 3)) //2019.3 and up
         {
-            m_ProgRayTracing = new SerializedProgram(reader);
+            progRayTracing = new SerializedProgram(reader);
         }
         m_HasInstancingVariant = reader.ReadBoolean();
         if (version >= 2018) //2018 and up
@@ -805,15 +843,15 @@ public class SerializedPass
 
 public class SerializedTagMap
 {
-    public KeyValuePair<string, string>[] m_Tags;
+    public KeyValuePair<string, string>[] tags;
 
     public SerializedTagMap(BinaryReader reader)
     {
         int numTags = reader.ReadInt32();
-        m_Tags = new KeyValuePair<string, string>[numTags];
+        tags = new KeyValuePair<string, string>[numTags];
         for (int i = 0; i < numTags; i++)
         {
-            m_Tags[i] = new KeyValuePair<string, string>(reader.ReadAlignedString(), reader.ReadAlignedString());
+            tags[i] = new KeyValuePair<string, string>(reader.ReadAlignedString(), reader.ReadAlignedString());
         }
     }
 }
@@ -840,13 +878,13 @@ public class SerializedSubShader
 
 public class SerializedShaderDependency
 {
-    public string m_From;
-    public string m_To;
+    public string from;
+    public string to;
 
     public SerializedShaderDependency(BinaryReader reader)
     {
-        m_From = reader.ReadAlignedString();
-        m_To = reader.ReadAlignedString();
+        from = reader.ReadAlignedString();
+        to = reader.ReadAlignedString();
     }
 }
 
@@ -921,6 +959,7 @@ public class SerializedShader
     }
 }
 
+// https://github.com/Unity-Technologies/UnityCsReference/blob/master/Editor/Mono/Graphics/ShaderCompilerData.cs
 public enum ShaderCompilerPlatform
 {
     None = -1,
@@ -948,7 +987,10 @@ public enum ShaderCompilerPlatform
     GameCoreXboxOne = 21,
     GameCoreScarlett = 22,
     PS5 = 23,
-    PS5NGGC = 24
+    PS5NGGC = 24,
+    GameCore = 25,
+    WebGPU = 26,
+    ReservedCFE = 27
 };
 
 public class Shader : NamedObject
@@ -985,6 +1027,15 @@ public class Shader : NamedObject
             }
             m_CompressedBlob = reader.ReadUInt8Array();
             reader.AlignStream();
+
+            if (version >= (2021, 3))
+            {
+                var stageCountsCount = reader.ReadInt32();
+                for (int i = 0; i < stageCountsCount; i++)
+                {
+                    reader.ReadInt32();
+                } 
+            }
 
             var m_DependenciesCount = reader.ReadInt32();
             for (int i = 0; i < m_DependenciesCount; i++)
