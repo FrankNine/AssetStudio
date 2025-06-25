@@ -270,12 +270,12 @@ internal static class Studio
                         assetItem.Text = m_Shader.m_ParsedForm?.m_Name ?? m_Shader.m_Name;
                         exportable = true;
                         break;
-                    case Mesh _:
-                    case TextAsset _:
-                    case AnimationClip _:
-                    case Font _:
-                    case MovieTexture _:
-                    case Sprite _:
+                    case Mesh:
+                    case TextAsset:
+                    case AnimationClip:
+                    case Font:
+                    case MovieTexture:
+                    case Sprite:
                         assetItem.Text = ((NamedObject)asset).m_Name;
                         exportable = true;
                         break;
@@ -376,9 +376,9 @@ internal static class Studio
                             m_GameObject.CubismModel.Container = container;
                         }
                         break;
-                    case AnimationClip _:
-                    case Texture2D _:
-                    case MonoBehaviour _:
+                    case AnimationClip:
+                    case Texture2D:
+                    case MonoBehaviour:
                         l2dAssetContainers[obj] = container;
                         break;
                 }

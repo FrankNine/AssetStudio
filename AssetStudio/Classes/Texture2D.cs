@@ -39,7 +39,7 @@ public sealed class Texture2D : Texture
         m_MipCount = m_Texture2DArray.m_MipCount;
         m_TextureSettings = m_Texture2DArray.m_TextureSettings;
         m_StreamData = m_Texture2DArray.m_StreamData;
-        m_PlatformBlob = Array.Empty<byte>();
+        m_PlatformBlob = [];
         m_MipMap = m_MipCount > 1;
         m_ImageCount = 1;
 
@@ -160,7 +160,7 @@ public sealed class Texture2D : Texture
         }
         else
         {
-            m_PlatformBlob = Array.Empty<byte>();
+            m_PlatformBlob = [];
         }
         var image_data_size = reader.ReadInt32();
         if (image_data_size == 0 && version >= (5, 3))//5.3.0 and up
